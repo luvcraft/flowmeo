@@ -60,4 +60,25 @@ export const flowData = [
 			"getCrank"
 		]
 	},
+	{
+		"id":"meetReel",
+		"description":"Meet Reel McKoi",
+		"parents":[
+			"firstDay"
+		]
+	},
+	{
+		"id":"meetBeaverly",
+		"description":"Meet Beaverly",
+		"parents":[
+			"firstDay"
+		]
+	},
+	{
+		"id":"meetPastrami",
+		"description":"Meet Madame Pastrami",
+		"parents":[
+			"firstDay"
+		]
+	},
 ];

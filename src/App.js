@@ -1,34 +1,68 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import Select from 'react-select';
 import './App.css';
 import {flowData} from './data';
 
-class Items extends React.Component {
-  renderItem(i) {
-    this.childArray = [];
-    flowData.map((data) => {
-      if(data.parents && data.parents.includes(i.id)){
-        this.childArray.push(data.id);
-      }
-    });
+function Item(props) {
+  var childArray = [];
+  var optionArray = [];
+  const i=props.data
+  flowData.forEach((data) => {
+    optionArray.push({value:data.id,label:data.id})
+    if(data.parents && data.parents.includes(i.id)){
+      childArray.push(data.id);
+    }
+  });
 
-    this.parents = i.parents ? i.parents.sort().join(" ") : "";
-    this.children = (this.childArray && this.childArray.length > 0) ? this.childArray.sort().join(" ") : ""
+  /*
+  const parents = i.parents ? i.parents.sort().join(" ") : null;
+  const children = (childArray && childArray.length > 0) ? childArray.sort().join(" ") : null;
+  */
 
-    return (
-      <div className="item">
-        parents: {this.parents}<br />
-        ({i.id}) <b>{i.description}</b><br/>
-        children: {this.children}
-      </div>
-    );
-  }
+  const parentOptions = i.parents ? 
+                          i.parents.sort().map((data) => {return {value:data,label:data}}) : [];
+  const childOptions = childArray.sort().map((data) => {return {value:data,label:data}});
 
+  return (
+    <div className="item">
+      <table border="0">
+        <td>
+        ⬆️: {/*parents*/} 
+        </td><td width="100%">
+        <Select
+          className="inline"
+          isMulti
+          name="parents"
+          defaultValue={parentOptions}
+          options={optionArray}
+        />
+        </td>
+      </table>
+      (<i>{i.id}</i>) <b>{i.description}</b><br/>
+      <table border="0">
+        <td>
+        ⬇️: {/*children*/} 
+        </td><td width="100%">
+        <Select
+          isMulti
+          name="children"
+          defaultValue={childOptions}
+          options={optionArray}
+        />
+        </td>
+      </table>
+    </div>
+  );
+}
+
+class AllItems extends React.Component {
   render() {
     const items = flowData.map((data, key) => {
       return(
         <li key={key}>
-          {this.renderItem(data)}
+          <Item
+            data={data}
+          />
         </li>
       );
     });
@@ -42,7 +76,7 @@ class Items extends React.Component {
 function App() {
   return (
     <div className="App">
-      <Items />
+      <AllItems />
     </div>
   );
 }
