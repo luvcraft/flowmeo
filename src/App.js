@@ -25,32 +25,35 @@ function Item(props) {
 
   return (
     <div className="item">
-      <table border="0">
+      <table border="0"><tbody><tr>
         <td>
-        ⬆️: {/*parents*/} 
-        </td><td width="100%">
+        <span role="img" aria-label="parents">⬆️</span> {/*parents*/} 
+        </td>
+        <td width="100%">
         <Select
-          className="inline"
           isMulti
           name="parents"
           defaultValue={parentOptions}
           options={optionArray}
+          placeholder="Add parent..."
         />
         </td>
-      </table>
+      </tr></tbody></table>
       (<i>{i.id}</i>) <b>{i.description}</b><br/>
-      <table border="0">
+      <table border="0"><tbody><tr>
         <td>
-        ⬇️: {/*children*/} 
-        </td><td width="100%">
+        <span role="img" aria-label="children">⬇️</span> {/*children*/} 
+        </td>
+        <td width="100%">
         <Select
           isMulti
           name="children"
           defaultValue={childOptions}
           options={optionArray}
+          placeholder="Add child..."
         />
         </td>
-      </table>
+      </tr></tbody></table>
     </div>
   );
 }
