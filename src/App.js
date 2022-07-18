@@ -23,8 +23,7 @@ function Item(props) {
                           i.parents.sort().map((data) => {return {value:data,label:data}}) : [];
   const childOptions = childArray.sort().map((data) => {return {value:data,label:data}});
 
-  return (
-    <div className="item">
+  var parentSection = (
       <table border="0"><tbody><tr>
         <td>
         <span role="img" aria-label="parents">⬆️</span> {/*parents*/} 
@@ -39,7 +38,16 @@ function Item(props) {
         />
         </td>
       </tr></tbody></table>
-      (<i>{i.id}</i>) <b>{i.description}</b><br/>
+    )
+
+  if(i.id === 'start') {
+    parentSection=null;
+  }
+
+  return (
+    <div className="item">
+      {parentSection}
+      <b>{i.description}</b> (<i>{i.id}</i>)<br/>
       <table border="0"><tbody><tr>
         <td>
         <span role="img" aria-label="children">⬇️</span> {/*children*/} 
