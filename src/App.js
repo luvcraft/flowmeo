@@ -3,12 +3,13 @@ import Select from 'react-select';
 import './App.css';
 import {flowData} from './data';
 
+var optionArray = [];
+var mutableData;
+
 function Item(props) {
   var childArray = [];
-  var optionArray = [];
-  const i=props.data
+  const i=props.data;
   flowData.forEach((data) => {
-    optionArray.push({value:data.id,label:data.id})
     if(data.parents && data.parents.includes(i.id)){
       childArray.push(data.id);
     }
@@ -21,24 +22,25 @@ function Item(props) {
 
   const parentOptions = i.parents ? 
                           i.parents.sort().map((data) => {return {value:data,label:data}}) : [];
-  const childOptions = childArray.sort().map((data) => {return {value:data,label:data}});
+  const childOptions = i.children ?
+                          i.children.sort().map((data) => {return {value:data,label:data}}) : [];
 
   var parentSection = (
-      <table border="0"><tbody><tr>
-        <td>
-        <span role="img" aria-label="parents">⬆️</span> {/*parents*/} 
-        </td>
-        <td width="100%">
-        <Select
-          isMulti
-          name="parents"
-          defaultValue={parentOptions}
-          options={optionArray}
-          placeholder="Add parent..."
-        />
-        </td>
-      </tr></tbody></table>
-    )
+    <table border="0"><tbody><tr>
+      <td>
+      <span role="img" aria-label="parents">⬆️</span> {/*parents*/} 
+      </td>
+      <td width="100%">
+      <Select
+        isMulti
+        name="parents"
+        defaultValue={parentOptions}
+        options={optionArray}
+        placeholder="Add parent..."
+      />
+      </td>
+    </tr></tbody></table>
+  );
 
   if(i.id === 'start') {
     parentSection=null;
@@ -47,7 +49,7 @@ function Item(props) {
   return (
     <div className="item">
       {parentSection}
-      <b>{i.description}</b> (<i>{i.id}</i>)<br/>
+      <b>{i.description}</b> (<i>{i.id}</i>) (D: {i.depth})<br/>
       <table border="0"><tbody><tr>
         <td>
         <span role="img" aria-label="children">⬇️</span> {/*children*/} 
@@ -68,7 +70,7 @@ function Item(props) {
 
 class AllItems extends React.Component {
   render() {
-    const items = flowData.map((data, key) => {
+    const items = mutableData.map((data, key) => {
       return(
         <li key={key}>
           <Item
@@ -84,7 +86,31 @@ class AllItems extends React.Component {
   }
 }
 
+function setChildren(i) {
+  mutableData.forEach((data) => {
+    if(data.parents && data.parents.includes(i.id)) {
+      i.children.push(data.id);
+      if(i.depth != null) {
+        if(data.depth == null || data.depth <= i.depth) {
+          data.depth = i.depth+1;
+        }
+      }
+    }
+  });
+}
+
 function App() {
+  mutableData = flowData.slice();
+  const startItem = mutableData.find(i => i.id === 'start');
+  startItem.depth = 0;
+
+  optionArray = [];
+  mutableData.forEach((data) => {
+    optionArray.push({value:data.id,label:data.id});
+    data.children = [];
+    setChildren(data);
+  });
+
   return (
     <div className="App">
       <AllItems />
