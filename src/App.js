@@ -1,11 +1,65 @@
 import React from 'react';
-import Select from 'react-select';
+import Select, { components } from "react-select";
+import Split from 'react-split'
+import mermaid from "mermaid"
 import './App.css';
 import {flowData} from './data';
 
 const startItemId = 'start';
 
 var optionArray = [];
+
+mermaid.initialize({
+  startOnLoad: true
+});
+
+class Mermaid extends React.Component {
+  componentDidMount() {
+    mermaid.contentLoaded();
+  }
+  render() {
+    return <div className="mermaid">{this.props.chart}</div>;
+  }
+}
+
+const MultiValueLabel = props => {
+  return (
+    <components.MultiValueLabel
+      {...props}
+      innerProps={{
+        ...props.innerProps,
+        onClick: e => {
+          e.stopPropagation(); // doesn't do anything, sadly
+          e.preventDefault(); // doesn't do anything, sadly
+          // still unsure how to preven the menu from opening
+          alert(props.data.label);
+        }
+      }}
+    />
+  );
+};
+
+function Flowchart() {
+  const chart = 'graph TD\n'+flowData.map((data) => {    
+          var s = data.id
+          if(data.id === startItemId){
+            s += '{'+data.description+'}'
+          } else {
+            s += '('+data.description+')'
+          }
+          if(data.children.length > 0) {
+            s +=' --> '+data.children.join(' & ');
+          }
+
+          return (s);
+        }).join('\n');
+
+  console.log(chart);
+
+  return (
+   <Mermaid chart={chart} />
+  );
+}
 
 function Item(props) {
   const i=props.data;
@@ -27,6 +81,7 @@ function Item(props) {
         defaultValue={parentOptions}
         options={optionArray}
         placeholder="Add parent..."
+        components={{ MultiValueLabel }}
       />
       </td>
     </tr></tbody></table>
@@ -51,6 +106,7 @@ function Item(props) {
           defaultValue={childOptions}
           options={optionArray}
           placeholder="Add child..."
+          components={{ MultiValueLabel }}
         />
         </td>
       </tr></tbody></table>
@@ -105,8 +161,11 @@ class App extends React.Component {
 
     return (
       <div className="App">
-        <AllItems />
-      </div>
+        <Split className="wrap">
+          <Flowchart />
+          <AllItems />
+        </Split>
+      </div>  
     );
   }
 }
