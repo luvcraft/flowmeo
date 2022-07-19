@@ -3,6 +3,8 @@ import Select from 'react-select';
 import './App.css';
 import {flowData} from './data';
 
+const startItemId = 'start';
+
 var optionArray = [];
 
 function Item(props) {
@@ -30,7 +32,7 @@ function Item(props) {
     </tr></tbody></table>
   );
 
-  if(i.id === 'start') {
+  if(i.id === startItemId) {
     parentSection=null;
   }
 
@@ -74,37 +76,39 @@ class AllItems extends React.Component {
   }
 }
 
-function setChildrenAndDepth(i) {
-  i.children = [];
-  flowData.forEach((data) => {
-    if(data.parents && data.parents.includes(i.id)) {
-      i.children.push(data.id);
-      if(i.depth != null) {
-        if(data.depth == null || data.depth <= i.depth) {
-          data.depth = i.depth+1;
+class App extends React.Component {
+  setChildrenAndDepth(i) {
+    i.children = [];
+    flowData.forEach((data) => {
+      if(data.parents && data.parents.includes(i.id)) {
+        i.children.push(data.id);
+        if(i.depth != null) {
+          if(data.depth == null || data.depth <= i.depth) {
+            data.depth = i.depth+1;
+          }
         }
       }
-    }
-  });
-}
+    });
+  }
 
-function App() {
-  const startItem = flowData.find(i => i.id === 'start');
-  startItem.depth = 0;
+  render() {
+    const startItem = flowData.find(i => i.id === startItemId);
+    startItem.depth = 0;
 
-  optionArray = [];
-  flowData.forEach((data) => {
-    optionArray.push({value:data.id,label:data.id});
-    setChildrenAndDepth(data);
-  });
+    optionArray = [];
+    flowData.forEach((data) => {
+      optionArray.push({value:data.id,label:data.id});
+      this.setChildrenAndDepth(data);
+    });
 
-  flowData.sort((a,b) => a.id > b.id ? 1 : -1).sort((a,b) => a.depth - b.depth);
+    flowData.sort((a,b) => a.id > b.id ? 1 : -1).sort((a,b) => a.depth - b.depth);
 
-  return (
-    <div className="App">
-      <AllItems />
-    </div>
-  );
+    return (
+      <div className="App">
+        <AllItems />
+      </div>
+    );
+  }
 }
 
 export default App;
