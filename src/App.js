@@ -4,21 +4,9 @@ import './App.css';
 import {flowData} from './data';
 
 var optionArray = [];
-var mutableData;
 
 function Item(props) {
-  var childArray = [];
   const i=props.data;
-  flowData.forEach((data) => {
-    if(data.parents && data.parents.includes(i.id)){
-      childArray.push(data.id);
-    }
-  });
-
-  /*
-  const parents = i.parents ? i.parents.sort().join(" ") : null;
-  const children = (childArray && childArray.length > 0) ? childArray.sort().join(" ") : null;
-  */
 
   const parentOptions = i.parents ? 
                           i.parents.sort().map((data) => {return {value:data,label:data}}) : [];
@@ -28,7 +16,7 @@ function Item(props) {
   var parentSection = (
     <table border="0"><tbody><tr>
       <td>
-      <span role="img" aria-label="parents">⬆️</span> {/*parents*/} 
+      <span role="img" aria-label="parents">⬆️</span>
       </td>
       <td width="100%">
       <Select
@@ -52,7 +40,7 @@ function Item(props) {
       <b>{i.description}</b> (<i>{i.id}</i>) (D: {i.depth})<br/>
       <table border="0"><tbody><tr>
         <td>
-        <span role="img" aria-label="children">⬇️</span> {/*children*/} 
+        <span role="img" aria-label="children">⬇️</span>
         </td>
         <td width="100%">
         <Select
@@ -70,7 +58,7 @@ function Item(props) {
 
 class AllItems extends React.Component {
   render() {
-    const items = mutableData.map((data, key) => {
+    const items = flowData.map((data, key) => {
       return(
         <li key={key}>
           <Item
@@ -86,8 +74,9 @@ class AllItems extends React.Component {
   }
 }
 
-function setChildren(i) {
-  mutableData.forEach((data) => {
+function setChildrenAndDepth(i) {
+  i.children = [];
+  flowData.forEach((data) => {
     if(data.parents && data.parents.includes(i.id)) {
       i.children.push(data.id);
       if(i.depth != null) {
@@ -100,16 +89,16 @@ function setChildren(i) {
 }
 
 function App() {
-  mutableData = flowData.slice();
-  const startItem = mutableData.find(i => i.id === 'start');
+  const startItem = flowData.find(i => i.id === 'start');
   startItem.depth = 0;
 
   optionArray = [];
-  mutableData.forEach((data) => {
+  flowData.forEach((data) => {
     optionArray.push({value:data.id,label:data.id});
-    data.children = [];
-    setChildren(data);
+    setChildrenAndDepth(data);
   });
+
+  flowData.sort((a,b) => a.id > b.id ? 1 : -1).sort((a,b) => a.depth - b.depth);
 
   return (
     <div className="App">
