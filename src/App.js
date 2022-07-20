@@ -16,8 +16,17 @@ class Mermaid extends React.Component {
     mermaid.contentLoaded();
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.chart !== this.props.chart) {
+      document
+        .getElementById("mermaid")
+        .removeAttribute("data-processed");
+      mermaid.contentLoaded();
+    }
+  }
+
   render() {
-    return <div className="mermaid">{this.props.chart}</div>;
+    return <div id="mermaid" className="mermaid">{this.props.chart}</div>;
   }
 }
 
@@ -198,9 +207,7 @@ class App extends React.Component {
     super(props);
     this.state = { prevItem: currentItem };
     mermaid.initialize({
-      mermaid : {
           startOnLoad: true,
-      },
       securityLevel: 'loose',
     });
 
