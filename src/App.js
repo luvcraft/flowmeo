@@ -8,18 +8,25 @@ import {flowData} from './data';
 const startItemId = 'start';
 
 var optionArray = [];
-
-mermaid.initialize({
-  startOnLoad: true
-});
+var currentItem = flowData[0];
 
 class Mermaid extends React.Component {
   componentDidMount() {
     mermaid.contentLoaded();
   }
+
   render() {
     return <div className="mermaid">{this.props.chart}</div>;
   }
+}
+
+function SelectItemById(id) {
+  if(currentItem.id === id) {
+    console.log('currentItem is already set to: ' + currentItem.id);
+    return;
+  }
+  currentItem = flowData.find((item) => item.id === id);
+  console.log('currentItem set to: ' + currentItem.id);
 }
 
 const MultiValueLabel = props => {
@@ -32,7 +39,7 @@ const MultiValueLabel = props => {
           e.stopPropagation(); // doesn't do anything, sadly
           e.preventDefault(); // doesn't do anything, sadly
           // still unsure how to preven the menu from opening
-          alert(props.data.label);
+          SelectItemById(props.data.label);
         }
       }}
     />
@@ -40,21 +47,25 @@ const MultiValueLabel = props => {
 };
 
 function Flowchart() {
-  const chart = 'graph TD\n'+flowData.map((data) => {    
+  const chart = 'graph TD\n'
+        +'classDef highlight fill:#ff0\n'
+        +flowData.map((data) => {    
           var s = data.id
           if(data.id === startItemId){
             s += '{'+data.description+'}'
           } else {
             s += '('+data.description+')'
           }
+          if(data.id === currentItem.id) {
+            s += ':::highlight'
+          }
+
           if(data.children.length > 0) {
             s +=' --> '+data.children.join(' & ');
           }
 
           return (s);
         }).join('\n');
-
-  console.log(chart);
 
   return (
    <Mermaid chart={chart} />
@@ -114,6 +125,16 @@ function Item(props) {
   );
 }
 
+function Toc() {
+  return (
+    <Select
+      options={optionArray}
+      value={optionArray.find((item) => item.value === currentItem.id)}
+      hideSelectedOptions="true"
+    />
+  );
+}
+
 class AllItems extends React.Component {
   render() {
     const items = flowData.map((data, key) => {
@@ -133,6 +154,19 @@ class AllItems extends React.Component {
 }
 
 class App extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = { prevItem: currentItem };
+  }
+
+  componentDidMount() {
+    this.interval = setInterval(() => this.refreshCheck(), 100);
+  }
+
+  refreshCheck() {
+    this.setState({ prevItem: currentItem });
+  }
+
   setChildrenAndDepth(i) {
     i.children = [];
     flowData.forEach((data) => {
@@ -163,7 +197,12 @@ class App extends React.Component {
       <div className="App">
         <Split className="wrap">
           <Flowchart />
-          <AllItems />
+          <div>
+            <Toc />
+            <Item
+              data={currentItem}
+            />
+          </div>
         </Split>
       </div>  
     );
