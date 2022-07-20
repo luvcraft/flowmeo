@@ -1,5 +1,6 @@
 import React from 'react';
 import Select, { components } from "react-select";
+import CreatableSelect from 'react-select/creatable';
 import Split from 'react-split'
 import mermaid from "mermaid"
 import './App.css';
@@ -88,13 +89,23 @@ function Flowchart() {
   );
 }
 
+function CreateIfNew(i, addStartParent = true) {
+  if(!flowData.find((item) => item.id === i)) {
+    console.log(i + " doesn't exist! creating!");
+    flowData.push({id:i, description:i, parents:addStartParent ? ['start'] : []})
+    refresh = true;
+  }
+}
+
 class Item extends React.Component {
   handleParentChange(event) {
+    event.forEach((data) => CreateIfNew(data.value));
     currentItem.parents = event.map((data) => {return data.value});   
     refresh = true;
   };
 
   handleChildChange(event) {
+    event.forEach((data) => CreateIfNew(data.value, false));
     event.forEach((data) => {
       var childItem = flowData.find((i) => i.id === data.value);
       if(childItem && !childItem.parents.includes(currentItem.id)) {
@@ -118,7 +129,7 @@ class Item extends React.Component {
         <span role="img" aria-label="parents">⬆️</span>
         </td>
         <td width="100%">
-        <Select
+        <CreatableSelect
           isMulti
           name="parents"
           value={parentOptions}
@@ -142,7 +153,7 @@ class Item extends React.Component {
         <span role="img" aria-label="children">⬇️</span>
         </td>
         <td width="100%">
-        <Select
+        <CreatableSelect
           isMulti
           name="children"
           value={childOptions}
@@ -171,11 +182,12 @@ class Item extends React.Component {
 
 function Toc() {
   const handleChange = event => {
+    CreateIfNew(event.value);
     SelectItemById(event.value);
   }
 
   return (
-    <Select
+    <CreatableSelect
       options={optionArray}
       value={optionArray.find((item) => item.value === currentItem.id)}
       hideSelectedOptions="true"
