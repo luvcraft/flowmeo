@@ -220,11 +220,12 @@ class App extends React.Component {
   refreshData() {
     optionArray = [];
     flowData.forEach((data) => {
-      optionArray.push({value:data.id,label:data.id});
+      optionArray.push({value:data.id,label:data.description + ' (' + data.id + ')'});
       this.setChildrenAndDepth(data);
     });
 
-    flowData.sort((a,b) => a.id > b.id ? 1 : -1).sort((a,b) => a.depth - b.depth);
+    flowData.sort((a,b) => a.id.localeCompare(b.id)).sort((a,b) => a.depth - b.depth);
+    optionArray.sort((a,b) => a.label.localeCompare(b.label));
   }
 
   componentDidMount() {
