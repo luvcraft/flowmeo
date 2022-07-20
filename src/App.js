@@ -9,6 +9,7 @@ const startItemId = 'start';
 
 var optionArray = [];
 var currentItem = flowData[0];
+var refresh = false;
 
 class Mermaid extends React.Component {
   componentDidMount() {
@@ -26,7 +27,6 @@ function SelectItemById(id) {
     return;
   }
   currentItem = flowData.find((item) => item.id === id);
-  console.log('currentItem set to: ' + currentItem.id);
 }
 
 const MultiValueLabel = props => {
@@ -79,40 +79,55 @@ function Flowchart() {
   );
 }
 
-function Item(props) {
-  const i=props.data;
+class Item extends React.Component {
+  handleParentChange(event) {
+    currentItem.parents = event.map((data) => {return data.value});   
+    refresh = true;
+  };
 
-  const parentOptions = i.parents ? 
+  handleChildChange(event) {
+    event.forEach((data) => {
+      var childItem = flowData.find((i) => i.id === data.value);
+      if(childItem && !childItem.parents.includes(currentItem.id)) {
+        childItem.parents.push(currentItem.id);
+      }
+    });
+    refresh = true;
+  };                        
+
+  parentSection(i) { 
+    if(i.id === startItemId) {
+      return null;
+    }
+
+    const parentOptions = i.parents ? 
                           i.parents.sort().map((data) => {return {value:data,label:data}}) : [];
-  const childOptions = i.children ?
-                          i.children.sort().map((data) => {return {value:data,label:data}}) : [];
 
-  var parentSection = (
-    <table border="0"><tbody><tr>
-      <td>
-      <span role="img" aria-label="parents">⬆️</span>
-      </td>
-      <td width="100%">
-      <Select
-        isMulti
-        name="parents"
-        defaultValue={parentOptions}
-        options={optionArray}
-        placeholder="Add parent..."
-        components={{ MultiValueLabel }}
-      />
-      </td>
-    </tr></tbody></table>
-  );
-
-  if(i.id === startItemId) {
-    parentSection=null;
+    return (
+      <table border="0"><tbody><tr>
+        <td>
+        <span role="img" aria-label="parents">⬆️</span>
+        </td>
+        <td width="100%">
+        <Select
+          isMulti
+          name="parents"
+          value={parentOptions}
+          onChange={this.handleParentChange}
+          options={optionArray}
+          placeholder="Add parent..."
+          components={{ MultiValueLabel }}
+        />
+        </td>
+      </tr></tbody></table>
+    );
   }
 
-  return (
-    <div className="item">
-      {parentSection}
-      <b>{i.description}</b> (<i>{i.id}</i>) (D: {i.depth})<br/>
+  childSection(i) {
+    const childOptions = i.children ?
+                          i.children.sort().map((data) => {return {value:data,label:data}}) : [];
+
+    return (
       <table border="0"><tbody><tr>
         <td>
         <span role="img" aria-label="children">⬇️</span>
@@ -121,15 +136,28 @@ function Item(props) {
         <Select
           isMulti
           name="children"
-          defaultValue={childOptions}
+          value={childOptions}
+          onChange={this.handleChildChange}
           options={optionArray}
           placeholder="Add child..."
           components={{ MultiValueLabel }}
         />
         </td>
       </tr></tbody></table>
-    </div>
-  );
+    );
+  };
+
+  render() {
+    const i = this.props.data;
+
+    return (
+      <div className="item">
+        {this.parentSection(i)}
+        <b>{i.description}</b> (<i>{i.id}</i>) (D: {i.depth})<br/>
+        {this.childSection(i)}
+      </div>
+    );
+  }
 }
 
 function Toc() {
@@ -169,12 +197,27 @@ class App extends React.Component {
   constructor(props){
     super(props);
     this.state = { prevItem: currentItem };
-        mermaid.initialize({
-        mermaid : {
-            startOnLoad: true,
-        },
-        securityLevel: 'loose',
+    mermaid.initialize({
+      mermaid : {
+          startOnLoad: true,
+      },
+      securityLevel: 'loose',
     });
+
+    const startItem = flowData.find(i => i.id === startItemId);
+    startItem.depth = 0;
+
+    this.refreshData();
+  }
+
+  refreshData() {
+    optionArray = [];
+    flowData.forEach((data) => {
+      optionArray.push({value:data.id,label:data.id});
+      this.setChildrenAndDepth(data);
+    });
+
+    flowData.sort((a,b) => a.id > b.id ? 1 : -1).sort((a,b) => a.depth - b.depth);
   }
 
   componentDidMount() {
@@ -184,6 +227,12 @@ class App extends React.Component {
   refreshCheck() {
     if(this.state.prevItem != currentItem) {
       this.setState({ prevItem: currentItem });
+    }
+
+    if(refresh){
+      refresh = false;
+      this.refreshData();
+      this.setState(this.state);
     }
   }
 
@@ -202,17 +251,6 @@ class App extends React.Component {
   }
 
   render() {
-    const startItem = flowData.find(i => i.id === startItemId);
-    startItem.depth = 0;
-
-    optionArray = [];
-    flowData.forEach((data) => {
-      optionArray.push({value:data.id,label:data.id});
-      this.setChildrenAndDepth(data);
-    });
-
-    flowData.sort((a,b) => a.id > b.id ? 1 : -1).sort((a,b) => a.depth - b.depth);
-
     return (
       <div className="App">
         <Split className="wrap">
