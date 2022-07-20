@@ -47,6 +47,12 @@ const MultiValueLabel = props => {
 };
 
 function Flowchart() {
+  window.flowchartClick = async function(e) {
+    if (e && e != '') {
+      SelectItemById(e);
+    }
+  }
+
   const chart = 'graph TD\n'
         +'classDef highlight fill:#ff0\n'
         +flowData.map((data) => {    
@@ -63,6 +69,7 @@ function Flowchart() {
           if(data.children.length > 0) {
             s +=' --> '+data.children.join(' & ');
           }
+          s += '\n\tclick '+data.id+' flowchartClick'
 
           return (s);
         }).join('\n');
@@ -126,11 +133,16 @@ function Item(props) {
 }
 
 function Toc() {
+  const handleChange = event => {
+    SelectItemById(event.value);
+  }
+
   return (
     <Select
       options={optionArray}
       value={optionArray.find((item) => item.value === currentItem.id)}
       hideSelectedOptions="true"
+      onChange={handleChange}
     />
   );
 }
@@ -157,6 +169,12 @@ class App extends React.Component {
   constructor(props){
     super(props);
     this.state = { prevItem: currentItem };
+        mermaid.initialize({
+        mermaid : {
+            startOnLoad: true,
+        },
+        securityLevel: 'loose',
+    });
   }
 
   componentDidMount() {
@@ -164,7 +182,9 @@ class App extends React.Component {
   }
 
   refreshCheck() {
-    this.setState({ prevItem: currentItem });
+    if(this.state.prevItem != currentItem) {
+      this.setState({ prevItem: currentItem });
+    }
   }
 
   setChildrenAndDepth(i) {
