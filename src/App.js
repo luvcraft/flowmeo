@@ -31,9 +31,32 @@ class Mermaid extends React.Component {
   }
 }
 
+function AncestorsOf(id) {
+  const item = flowData.find((i) => i.id === id);
+  if(!item || !item.parents || item.parents.length < 1) {
+    return [];
+  } else {
+    var ancestors = [];
+    item.parents.forEach((p) => {
+      if(!ancestors.includes(p)) {
+          ancestors.push(p);
+      }
+      var parentAncestors = AncestorsOf(p);
+      if(parentAncestors.length > 0) {
+        parentAncestors.forEach((pa) => {
+          if(!ancestors.includes(pa)){
+            ancestors.push(pa);
+          }
+        });
+      }
+    })
+    return ancestors;
+  }
+}
+
 function SelectItemById(id) {
   if(currentItem.id === id) {
-    console.log('currentItem is already set to: ' + currentItem.id);
+    LogAction('⚠️ currentItem is already set to: ' + currentItem.id);
     return;
   }
   currentItem = flowData.find((item) => item.id === id);
@@ -91,28 +114,60 @@ function Flowchart() {
 
 function CreateIfNew(i, addStartParent = true) {
   if(!flowData.find((item) => item.id === i)) {
-    console.log(i + " doesn't exist! creating!");
+    LogAction(i + " doesn't exist! creating!");
     flowData.push({id:i, description:i, parents:addStartParent ? ['start'] : []})
     refresh = true;
   }
 }
 
+function LogAction(action){
+  console.log(action);
+}
+
 class Item extends React.Component {
   handleParentChange(event) {
-    event.forEach((data) => CreateIfNew(data.value));
-    currentItem.parents = event.map((data) => {return data.value});   
-    refresh = true;
+    let invalid = false;
+    event.forEach((data) => {
+      if(data.value === currentItem.id) {
+        LogAction("🚫 Can't make "+data.value+" a parent of itself!");
+        invalid=true;
+      }
+      CreateIfNew(data.value);
+      if(AncestorsOf(data.value).includes(currentItem.id)) {
+        LogAction("🚫 Can't make "+data.value+" a parent of "+currentItem.id+"! "+currentItem.id+" is an ancestor of "+data.value+"!");
+        invalid=true;
+      }
+    });
+    
+    if(!invalid) {
+      currentItem.parents = event.map((data) => {return data.value});   
+      refresh = true;
+    }
   };
 
   handleChildChange(event) {
-    event.forEach((data) => CreateIfNew(data.value, false));
-    event.forEach((data) => {
-      var childItem = flowData.find((i) => i.id === data.value);
-      if(childItem && !childItem.parents.includes(currentItem.id)) {
-        childItem.parents.push(currentItem.id);
+    let invalid = false;
+    event.forEach((data) => { 
+      if(data.value === currentItem.id) {
+        LogAction("🚫 Can't make "+data.value+" a parent of itself!");
+        invalid=true;
+      }
+      CreateIfNew(data.value, false);
+      if(AncestorsOf(currentItem.id).includes(data.value)) {
+        LogAction("🚫 Can't make "+currentItem.id+" a parent of "+data.value+"! "+data.value+" is an ancestor of "+currentItem.id+"!");
+        invalid=true;
       }
     });
-    refresh = true;
+
+    if(!invalid) {
+      event.forEach((data) => {
+        var childItem = flowData.find((i) => i.id === data.value);
+        if(childItem && !childItem.parents.includes(currentItem.id)) {
+          childItem.parents.push(currentItem.id);
+        }
+      });
+      refresh = true;
+    }
   };                        
 
   parentSection(i) { 
