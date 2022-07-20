@@ -45,10 +45,10 @@ const MultiValueLabel = props => {
       {...props}
       innerProps={{
         ...props.innerProps,
+        onMouseDown: e => {
+          e.stopPropagation()
+        },
         onClick: e => {
-          e.stopPropagation(); // doesn't do anything, sadly
-          e.preventDefault(); // doesn't do anything, sadly
-          // still unsure how to preven the menu from opening
           SelectItemById(props.data.label);
         }
       }}
