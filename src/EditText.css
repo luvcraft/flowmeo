@@ -1,0 +1,106 @@
+._4GdcU {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+._4GdcU:hover {
+  cursor: pointer;
+  background: rgba(220, 220, 220, 0.4);
+}
+
+._G0k44 {
+  overflow-y: auto;
+  transition: background 0.2s ease;
+}
+
+/* Width */
+._G0k44::-webkit-scrollbar {
+  width: 8px;
+}
+/* Track */
+._G0k44::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+/* Handle */
+._G0k44::-webkit-scrollbar-thumb {
+  background: #ccc;
+}
+/* Handle on hover */
+._G0k44::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+/* Handle on drag */
+._G0k44::-webkit-scrollbar-thumb:active {
+  background: #666;
+}
+
+._G0k44:hover {
+  cursor: pointer;
+  background: rgba(220, 220, 220, 0.4);
+}
+
+._i5--j {
+  width:  95%;
+  padding: 5px;
+  display: block;
+  margin: 3px 0;
+  scrollbar-width: thin;
+}
+
+/* Width */
+._i5--j::-webkit-scrollbar {
+  width: 8px;
+}
+/* Track */
+._i5--j::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+/* Handle */
+._i5--j::-webkit-scrollbar-thumb {
+  background: #ccc;
+}
+/* Handle on hover */
+._i5--j::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+/* Handle on drag */
+._i5--j::-webkit-scrollbar-thumb:active {
+  background: #666;
+}
+
+._TDklp {
+  color: #999;
+}
+
+._gmkRL {
+  display: inline !important;
+}
+
+._-wzeg {
+  cursor: auto !important;
+}
+
+._-wzeg:hover {
+  cursor: auto !important;
+}
+
+._IYz6Z {
+  display: flex;
+}
+
+._NGZSv {
+  background-color: #fff;
+  color: black;
+  border: 0;
+  outline: none;
+  min-width: 28px;
+}
+
+._NGZSv:focus {
+  border: 0;
+  outline: none;
+}
+
+/*# sourceMappingURL=index.css.map */

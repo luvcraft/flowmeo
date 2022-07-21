@@ -1,16 +1,19 @@
 import React from 'react';
 import Select, { components } from "react-select";
 import CreatableSelect from 'react-select/creatable';
+import { EditText, EditTextarea } from 'react-edit-text';
 import Split from 'react-split'
 import mermaid from "mermaid"
 import './App.css';
-import {flowData} from './data';
+import './EditText.css';
+import {staticData} from './data';
 
 const startItemId = 'start';
 
 var optionArray = [];
-var currentItem = flowData[0];
+var currentItem;
 var refresh = false;
+var flowData;
 
 class Mermaid extends React.Component {
   componentDidMount() {
@@ -170,6 +173,15 @@ class Item extends React.Component {
     }
   };                        
 
+  handleTextChange({name, value, previousValue}) {
+    if(name === 'description') {
+      currentItem.description = value;
+    } else if(name === 'notes') {
+      currentItem.notes = value;
+    }
+    refresh = true;
+  }
+
   parentSection(i) { 
     if(i.id === startItemId) {
       return null;
@@ -224,11 +236,25 @@ class Item extends React.Component {
 
   render() {
     const i = this.props.data;
+    const notes = i.notes ?? null;
 
     return (
       <div className="item">
         {this.parentSection(i)}
-        <b>{i.description}</b> (<i>{i.id}</i>) (D: {i.depth})<br/>
+        <b>
+        <EditText
+          name="description"
+          defaultValue={i.description}
+          onSave={this.handleTextChange}
+        />
+        </b> (<i>{i.id}</i>) (<i>Depth: {i.depth}</i>)<br/>
+        <EditTextarea
+          name="notes"
+          placeholder='Notes...'
+          defaultValue={notes}
+          onSave={this.handleTextChange}
+          style={{ border: '1px solid #ccc' }}
+        />
         {this.childSection(i)}
       </div>
     );
@@ -269,9 +295,31 @@ class AllItems extends React.Component {
   }
 }
 
+function LoadDataLocal() {
+  console.log("loading data local");
+
+  let loadedData = JSON.parse(localStorage.getItem('flowData'));
+  if(loadedData != null) {
+    flowData = loadedData;
+  } else {
+    flowData = staticData.slice();
+  }
+  currentItem = flowData[0];
+}
+
+function SaveDataLocal() {
+  console.log("saving data local");
+
+  let data = flowData.slice();
+  localStorage.setItem('flowData', JSON.stringify(data));
+}
+
 class App extends React.Component {
   constructor(props){
     super(props);
+
+    LoadDataLocal();
+
     this.state = { prevItem: currentItem };
     mermaid.initialize({
           startOnLoad: true,
@@ -308,6 +356,8 @@ class App extends React.Component {
       refresh = false;
       this.refreshData();
       this.setState(this.state);
+
+      SaveDataLocal();
     }
   }
 

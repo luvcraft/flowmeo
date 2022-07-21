@@ -1,4 +1,4 @@
-export const flowData = [
+export const staticData = [
 	{
 		"id":"start",
 		"description":"Start"
