@@ -3,6 +3,8 @@ import Select, { components } from "react-select";
 import CreatableSelect from 'react-select/creatable';
 import { EditText, EditTextarea } from 'react-edit-text';
 import Split from 'react-split'
+import { confirmAlert } from "react-confirm-alert";
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import mermaid from "mermaid"
 import './App.css';
 import './EditText.css';
@@ -315,7 +317,7 @@ class App extends React.Component {
 
     this.state = { prevItem: currentItem };
     mermaid.initialize({
-          startOnLoad: true,
+      startOnLoad: true,
       securityLevel: 'loose',
     });
 
@@ -381,6 +383,41 @@ class App extends React.Component {
     return downloadData;
   }
 
+  handleUpload(e) {
+    const fileReader = new FileReader();
+    fileReader.readAsText(e.target.files[0], "UTF-8");
+    fileReader.onload = e => {
+      let loadedData = JSON.parse(e.target.result);
+      if(loadedData != null) {
+        flowData = loadedData;
+      }
+      currentItem = flowData[0];
+      refresh = true;
+    };
+  };
+
+  confirmClear = () => {
+    confirmAlert({
+      title: "Confirm Clearing Data",
+      message: "Are you sure you want to clear all data?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => this.clearData()
+        },
+        {
+          label: "No"
+        }
+      ]
+    });
+  };
+
+  clearData() {
+    flowData = [{ "id":"start", "description":"Start" }];    
+    currentItem = flowData[0];
+    refresh = true;
+  }
+
   render() {
     return (
       <div className="App">
@@ -402,6 +439,10 @@ class App extends React.Component {
                 {`Download Json`}
               </button>
             </a>
+            <input type="file" onChange={this.handleUpload} />
+            <button className="clearDataButton" onClick={this.confirmClear}>
+              {'Clear Data'}
+            </button>
           </div>
         </Split>
       </div>  
