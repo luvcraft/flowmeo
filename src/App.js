@@ -6,14 +6,13 @@ import Split from 'react-split'
 import mermaid from "mermaid"
 import './App.css';
 import './EditText.css';
-import {staticData} from './data';
 
 const startItemId = 'start';
 
 var optionArray = [];
 var currentItem;
 var refresh = false;
-var flowData;
+var flowData =  [{ "id":"start", "description":"Start" }];
 
 class Mermaid extends React.Component {
   componentDidMount() {
@@ -102,7 +101,7 @@ function Flowchart() {
             s += ':::highlight'
           }
 
-          if(data.children.length > 0) {
+          if(data.children && data.children.length > 0) {
             s +=' --> '+data.children.join(' & ');
           }
           s += '\n\tclick '+data.id+' flowchartClick'
@@ -296,20 +295,14 @@ class AllItems extends React.Component {
 }
 
 function LoadDataLocal() {
-  console.log("loading data local");
-
   let loadedData = JSON.parse(localStorage.getItem('flowData'));
   if(loadedData != null) {
     flowData = loadedData;
-  } else {
-    flowData = staticData.slice();
   }
   currentItem = flowData[0];
 }
 
 function SaveDataLocal() {
-  console.log("saving data local");
-
   let data = flowData.slice();
   localStorage.setItem('flowData', JSON.stringify(data));
 }
@@ -375,6 +368,19 @@ class App extends React.Component {
     });
   }
 
+  dataForDownload() {
+    var downloadData = [];
+    flowData.forEach((item) => {
+      let ditem = {...item};
+
+      delete ditem['depth'];
+      delete ditem['children'];
+
+      downloadData.push(ditem);
+    });
+    return downloadData;
+  }
+
   render() {
     return (
       <div className="App">
@@ -385,6 +391,17 @@ class App extends React.Component {
             <Item
               data={currentItem}
             />
+            <a
+              type="button"
+              href={`data:text/json;charset=utf-8,${encodeURIComponent(
+               JSON.stringify(this.dataForDownload(),null,'\t')
+              )}`}
+              download="flowData.json"
+            >
+              <button>
+                {`Download Json`}
+              </button>
+            </a>
           </div>
         </Split>
       </div>  

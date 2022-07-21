@@ -1,4 +1,4 @@
-export const staticData = [
+[
 	{
 		"id":"start",
 		"description":"Start"
@@ -81,4 +81,4 @@ export const staticData = [
 			"firstDay"
 		]
 	},
-];
+]
