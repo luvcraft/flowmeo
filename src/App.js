@@ -14,7 +14,7 @@ const startItemId = 'start';
 var optionArray = [];
 var currentItem;
 var refresh = false;
-var flowData =  [{ "id":"start", "description":"Start" }];
+var flowData = [{ "id":"start", "description":"Start", "depth":0 }];
 
 class Mermaid extends React.Component {
   componentDidMount() {
@@ -383,13 +383,23 @@ class App extends React.Component {
     return downloadData;
   }
 
-  handleUpload(e) {
+  handleUpload = (e) => {
     const fileReader = new FileReader();
     fileReader.readAsText(e.target.files[0], "UTF-8");
     fileReader.onload = e => {
       let loadedData = JSON.parse(e.target.result);
       if(loadedData != null) {
-        flowData = loadedData;
+        this.clearData();
+        loadedData.forEach((d) => {
+          if(flowData.find((item) => item.id === d.id)) {
+            if(d.id != startItemId) {
+              LogAction("data already contains an item with id '" + d.id + "'. skipping!");
+            }
+          }
+          else {
+            flowData.push(d);
+          }
+        });
       }
       currentItem = flowData[0];
       refresh = true;
@@ -413,7 +423,7 @@ class App extends React.Component {
   };
 
   clearData() {
-    flowData = [{ "id":"start", "description":"Start" }];    
+    flowData = [{ "id":"start", "description":"Start", "depth":0 }];
     currentItem = flowData[0];
     refresh = true;
   }
@@ -433,7 +443,7 @@ class App extends React.Component {
               href={`data:text/json;charset=utf-8,${encodeURIComponent(
                JSON.stringify(this.dataForDownload(),null,'\t')
               )}`}
-              download="flowData.json"
+              download="flowmeo.json"
             >
               <button>
                 {`Download Json`}
