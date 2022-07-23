@@ -133,6 +133,10 @@ class Item extends React.Component {
   handleParentChange(event) {
     let invalid = false;
     event.forEach((data) => {
+
+      // strip whitespace and non alphanumeric characters out of string
+      data.value = data.value.replace(/[^A-Z0-9]/ig, "_");
+
       if(data.value === currentItem.id) {
         LogAction("🚫 Can't make "+data.value+" a parent of itself!");
         invalid = true;
@@ -166,6 +170,9 @@ class Item extends React.Component {
 
     let invalid = false;
     event.forEach((data) => { 
+      // strip whitespace and non alphanumeric characters out of string
+      data.value = data.value.replace(/[^A-Z0-9]/ig, "_");
+
       if(data.value === currentItem.id) {
         LogAction("🚫 Can't make "+data.value+" a parent of itself!");
         invalid=true;
@@ -303,6 +310,9 @@ class Item extends React.Component {
 
 function Toc() {
   const handleChange = event => {
+    // strip whitespace and non alphanumeric characters out of string
+    event.value = event.value.replace(/[^A-Z0-9]/ig, "_");
+
     CreateIfNew(event.value);
     SelectItemById(event.value);
   }
