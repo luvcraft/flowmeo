@@ -439,6 +439,26 @@ class App extends React.Component {
     return downloadData;
   }
 
+  mmdForDownload() {
+    return (
+      'graph TD\n'
+        +flowData.map((data) => {    
+          var s = data.id
+          if(data.id === startItemId){
+            s += '{'+data.description+'}'
+          } else {
+            s += '('+data.description+')'
+          }
+
+          if(data.children && data.children.length > 0) {
+            s +=' --> '+data.children.join(' & ');
+          }
+
+          return (s);
+        }).join('\n')
+    );
+  }
+
   handleUpload = (e) => {
     const fileReader = new FileReader();
     fileReader.readAsText(e.target.files[0], "UTF-8");
@@ -502,12 +522,26 @@ class App extends React.Component {
               download="flowmeo.json"
             >
               <button>
-                {`Download Json`}
+                Download Json
               </button>
             </a>
-            <input type="file" onChange={this.handleUpload} />
+            <a
+              type="button"
+              href={`data:text/json;charset=utf-8,${encodeURIComponent(
+               this.mmdForDownload()
+              )}`}
+              download="flowmeo.mmd"
+            >
+              <button>
+                Download MMD
+              </button>
+            </a>
+            <button onClick={() => document.getElementById('file-upload').click()}>
+              Upload Json
+            </button>
+            <input id="file-upload" type="file" accept=".json" onChange={this.handleUpload} style={{display:'none'}} />
             <button className="clearDataButton" onClick={this.confirmClear}>
-              {'Clear Data'}
+              Clear Data
             </button>
           </div>
           <ConsoleOutput />

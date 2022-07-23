@@ -42,10 +42,13 @@
 }
 
 ._i5--j {
-  width:  95%;
   padding: 5px;
   display: block;
   scrollbar-width: thin;
+}
+
+input._i5--j {
+    width:  95%;
 }
 
 /* Width */
