@@ -8,3 +8,5 @@ I created it to help me plan and design video games where, for example, you have
 You can try it out here: https://luvcraft.github.io/flowmeo/
 
 I built it using React (https://reactjs.org/) and Mermaid.js (https://mermaid-js.github.io/mermaid/)
+
+You can download the data from it as either JSON or mmd (mermaid markup), and upload data as JSON. It's designed to be used as a planning tool rather than to generate scripts that you can use directly for game logic, although there's no reason you couldn't use the data for game logic with a suitable system.
