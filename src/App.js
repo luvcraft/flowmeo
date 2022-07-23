@@ -193,6 +193,23 @@ class Item extends React.Component {
       currentItem.description = value;
     } else if(name === 'notes') {
       currentItem.notes = value;
+    } else if(name === 'id') {
+      if(previousValue === startItemId) {
+        LogAction("⚠️ Can't rename start item!");
+        return;
+      } else if(flowData.find((item) => item.id === value)) {
+        LogAction("⚠️ An item named "+value+" already exists!");
+        return;
+      } else {
+        currentItem.id = value;
+        flowData.forEach((item) => {
+          let index = item.parents?.indexOf(previousValue) ?? -1;
+          if(index > -1){
+            item.parents[index] = value;
+          }
+        });
+        LogAction("renamed item id " + previousValue + " to " + value);
+      }      
     }
     refresh = true;
   }
@@ -262,7 +279,15 @@ class Item extends React.Component {
           defaultValue={i.description}
           onSave={this.handleTextChange}
         />
-        </b> (<i>{i.id}</i>) (<i>Depth: {i.depth}</i>)<br/>
+        </b><br/>
+        <i>
+         <EditText
+          name="id"
+          defaultValue={i.id}
+          onSave={this.handleTextChange}
+        />
+        </i>
+        (<i>Depth: {i.depth}</i>)<br/>
         <EditTextarea
           name="notes"
           placeholder='Notes...'

@@ -45,7 +45,6 @@
   width:  95%;
   padding: 5px;
   display: block;
-  margin: 3px 0;
   scrollbar-width: thin;
 }
 
@@ -87,7 +86,7 @@
 }
 
 ._IYz6Z {
-  display: flex;
+  display: inline-flex;
 }
 
 ._NGZSv {
