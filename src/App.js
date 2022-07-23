@@ -2,7 +2,6 @@ import React from 'react';
 import Select, { components } from "react-select";
 import CreatableSelect from 'react-select/creatable';
 import { EditText, EditTextarea } from 'react-edit-text';
-import Split from 'react-split'
 import { confirmAlert } from "react-confirm-alert";
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import mermaid from "mermaid"
@@ -15,6 +14,7 @@ var optionArray = [];
 var currentItem;
 var refresh = false;
 var flowData = [{ "id":"start", "description":"Start", "depth":0 }];
+var consoleText = "";
 
 class Mermaid extends React.Component {
   componentDidMount() {
@@ -126,6 +126,7 @@ function CreateIfNew(i, addStartParent = true) {
 
 function LogAction(action){
   console.log(action);
+  consoleText += action + "\n";
 }
 
 class Item extends React.Component {
@@ -423,7 +424,7 @@ class App extends React.Component {
   };
 
   clearData() {
-    flowData = [{ "id":"start", "description":"Start", "depth":0 }];
+    flowData =  [{ "id":"start", "description":"Start", "depth":0 }];
     currentItem = flowData[0];
     refresh = true;
   }
@@ -431,9 +432,9 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <Split className="wrap">
-          <Flowchart />
-          <div>
+        <Flowchart />
+        <div className="rightSide">
+          <div className="infoPanel">
             <Toc />
             <Item
               data={currentItem}
@@ -454,7 +455,11 @@ class App extends React.Component {
               {'Clear Data'}
             </button>
           </div>
-        </Split>
+          <div className="console">
+            <b>Console:</b><br/>
+            {consoleText}
+          </div>
+        </div>
       </div>  
     );
   }
