@@ -135,12 +135,12 @@ class Item extends React.Component {
     event.forEach((data) => {
       if(data.value === currentItem.id) {
         LogAction("🚫 Can't make "+data.value+" a parent of itself!");
-        invalid=true;
+        invalid = true;
       }
       CreateIfNew(data.value);
       if(AncestorsOf(data.value).includes(currentItem.id)) {
         LogAction("🚫 Can't make "+data.value+" a parent of "+currentItem.id+"! "+currentItem.id+" is an ancestor of "+data.value+"!");
-        invalid=true;
+        invalid = true;
       }
     });
     
@@ -324,7 +324,7 @@ function ConsoleOutput() {
       {
         consoleItem.map((c, key) => {
           return (
-            <div key={key}>
+            <div key={key} className='consoleItem'>
             {c}
             </div>
           )
@@ -371,7 +371,10 @@ class App extends React.Component {
 
     LoadDataLocal();
 
-    this.state = { prevItem: currentItem };
+    this.state = { 
+      prevItem: currentItem, 
+      prevConsoleLength: 0
+    };
     mermaid.initialize({
       startOnLoad: true,
       securityLevel: 'loose',
@@ -403,7 +406,11 @@ class App extends React.Component {
       this.setState({ prevItem: currentItem });
     }
 
-    if(refresh){
+    if(this.state.prevConsoleLength != consoleItem.length) {
+      this.setState({prevConsoleLength: consoleItem.length });
+    }
+
+    if(refresh) {
       refresh = false;
       this.refreshData();
       this.setState(this.state);
