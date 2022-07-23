@@ -1,4 +1,4 @@
-[![MIT License][license-shield]][license-url]
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # flowmeo
 Flowmeo is a web tool for making monodirectional flowcharts (i.e. ones where the flow can never go "backwards").
