@@ -14,7 +14,7 @@ var optionArray = [];
 var currentItem;
 var refresh = false;
 var flowData = [{ "id":"start", "description":"Start", "depth":0 }];
-var consoleText = "";
+var consoleItem = [];
 
 class Mermaid extends React.Component {
   componentDidMount() {
@@ -126,7 +126,7 @@ function CreateIfNew(i, addStartParent = true) {
 
 function LogAction(action){
   console.log(action);
-  consoleText += action + "\n";
+  consoleItem.push(action);
 }
 
 class Item extends React.Component {
@@ -151,6 +151,19 @@ class Item extends React.Component {
   };
 
   handleChildChange(event) {
+    // if a child has been removed, remove this parent from all children
+    if(event.length < currentItem.children.length) {
+      currentItem.children.forEach((c) => {
+        var childItem = flowData.find((i) => i.id === c);
+        if(childItem) {
+          let index = childItem.parents.indexOf(currentItem.id);
+          if(index > -1) {
+            childItem.parents.splice(index,1);
+          }
+        }
+      });
+    }
+
     let invalid = false;
     event.forEach((data) => { 
       if(data.value === currentItem.id) {
@@ -276,6 +289,23 @@ function Toc() {
       hideSelectedOptions="true"
       onChange={handleChange}
     />
+  );
+}
+
+function ConsoleOutput() {
+  return (
+    <div className="console">
+      <b>Console:</b><br/>
+      {
+        consoleItem.map((c, key) => {
+          return (
+            <div key={key}>
+            {c}
+            </div>
+          )
+        })
+      }
+    </div>
   );
 }
 
@@ -455,10 +485,7 @@ class App extends React.Component {
               {'Clear Data'}
             </button>
           </div>
-          <div className="console">
-            <b>Console:</b><br/>
-            {consoleText}
-          </div>
+          <ConsoleOutput />
         </div>
       </div>  
     );
