@@ -388,6 +388,11 @@ class App extends React.Component {
     mermaid.initialize({
       startOnLoad: true,
       securityLevel: 'loose',
+      /*
+      flowchart: {
+      	rankSpacing: 50,
+      }
+      */
     });
 
     const startItem = flowData.find(i => i.id === startItemId);
