@@ -1,13 +1,15 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # Flowmeo
-Flowmeo is a web tool for making monodirectional flowcharts (i.e. ones where the flow can never go "backwards").
+Flowmeo is a web tool to quickly make one-way, "dependency" flowcharts, like you might need for designing an adventure game, or a tech tree, or a skill tree. I made it primarily as an aid for designing video games, but it could be useful for a planning a variety of different kinds of projects.
+
+You can try it out here: https://luvcraft.github.io/flowmeo/
 
 ![Flowmeo Screen Shot](images/screenshot.png)
 
-I created it to help me plan and design video games where, for example, you have to do A before B and B before C, and then you have to do C and D before you can do E.
+Here's an overview video:
 
-You can try it out here: https://luvcraft.github.io/flowmeo/
+[![Flowmeo Overview Video](https://img.youtube.com/vi/52JzFivuCLo/0.jpg)](https://www.youtube.com/watch?v=52JzFivuCLo)
 
 I built it using React (https://reactjs.org/) and Mermaid.js (https://mermaid-js.github.io/mermaid/)
 
