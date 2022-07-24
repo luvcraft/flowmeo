@@ -20,12 +20,21 @@ html, body, #root {
   text-align: left;
 }
 
-.mermaid {
+.react-flow {
   border: 1px solid darkgray;
   padding: 4px;  
   flex: 60;
   overflow-y: auto;
   display: inline-block;
+}
+
+path.react-flow__edge-path {
+  stroke-width: 2;
+}
+
+.react-flow__node {
+  font-family: "trebuchet ms",verdana,arial,sans-serif;
+  font-size: 16px;
 }
 
 .rightSide {

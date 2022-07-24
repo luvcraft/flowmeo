@@ -3,8 +3,14 @@ import Select, { components } from "react-select";
 import CreatableSelect from 'react-select/creatable';
 import { EditText, EditTextarea } from 'react-edit-text';
 import { confirmAlert } from "react-confirm-alert";
+import ReactFlow, {
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  MiniMap,
+  Controls,
+} from 'react-flow-renderer';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import mermaid from "mermaid"
 import './App.css';
 import './EditText.css';
 
@@ -16,23 +22,96 @@ var refresh = false;
 var flowData = [{ "id":"start", "description":"Start", "depth":0 }];
 var consoleItem = [];
 
-class Mermaid extends React.Component {
-  componentDidMount() {
-    mermaid.contentLoaded();
+function Flowchart() {
+  const handleNodeClick = (event, node) => {
+		SelectItemById(node.id);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.chart !== this.props.chart) {
-      document
-        .getElementById("mermaid")
-        .removeAttribute("data-processed");
-      mermaid.contentLoaded();
-    }
-  }
+  var x = 0;
+  var y = 0;
+  var xstep = 200;
+  var ystep = 100;
+  var maxX = xstep * 4;
+  var lastDepth = -1;
+  var edges = [];
 
-  render() {
-    return <div id="mermaid" className="mermaid">{this.props.chart}</div>;
-  }
+  const edgeColors = [
+  	'black',
+  	'#800',
+  	'#080',
+  	'#008',
+  	'#440',
+  	'#404',
+  	'#044'
+  ]
+
+  var edgeColorIndex = 0;
+
+  const nodes = flowData.map((data) => {
+  	if(data.depth > lastDepth || x >= maxX) {
+  		x = 0;
+  		edgeColorIndex = 0;
+  		y += ystep;
+  		lastDepth = data.depth;
+  	} else {
+	  	x += xstep;
+  	}
+
+  	data.parents?.forEach((p) => {
+  		let edgeColor = edgeColors[edgeColorIndex];
+
+  		edges.push({
+  			id: 'edge-'+p+'-'+data.id,
+  			source: p,
+  			target: data.id,
+  			markerEnd: {
+  				type: 'arrowclosed',
+  				color: edgeColor,
+  			},
+  			style: {
+  				stroke: edgeColor,
+  			},
+  		});  		
+
+  		edgeColorIndex ++;
+  		edgeColorIndex %= edgeColors.length;
+  	});
+
+  	let node = {
+  			id: data.id,
+  			data: { 
+  				label: data.description,
+  			},
+  			style: {
+  				background: '#ECECFF'
+  			},
+  	}
+
+  	if(data.id === startItemId) {
+  		y=0;
+  		node.type = 'input';
+  	} else {
+  	}
+
+  	if(data.id === currentItem.id) {
+  		node.style.background = '#ff0';
+  	} else {
+
+  	}
+
+		node.position = { x: x, y: y };
+
+  	return node;
+  });
+
+  return (
+		<ReactFlow 
+			nodes={nodes}
+			edges={edges}
+			onNodeClick={handleNodeClick}
+			nodesDraggable={false}
+		/>
+  );
 }
 
 function AncestorsOf(id) {
@@ -82,39 +161,6 @@ const MultiValueLabel = props => {
     />
   );
 };
-
-function Flowchart() {
-  window.flowchartClick = async function(e) {
-    if (e && e != '') {
-      SelectItemById(e);
-    }
-  }
-
-  const chart = 'graph TD\n'
-        +'classDef highlight fill:#ff0\n'
-        +flowData.map((data) => {    
-          var s = data.id
-          if(data.id === startItemId){
-            s += '{'+data.description+'}'
-          } else {
-            s += '('+data.description+')'
-          }
-          if(data.id === currentItem.id) {
-            s += ':::highlight'
-          }
-
-          if(data.children && data.children.length > 0) {
-            s +=' --> '+data.children.join(' & ');
-          }
-          s += '\n\tclick '+data.id+' flowchartClick'
-
-          return (s);
-        }).join('\n');
-
-  return (
-   <Mermaid chart={chart} />
-  );
-}
 
 function CreateIfNew(i, addStartParent = true) {
   if(!flowData.find((item) => item.id === i)) {
@@ -385,15 +431,6 @@ class App extends React.Component {
       prevItem: currentItem, 
       prevConsoleLength: 0
     };
-    mermaid.initialize({
-      startOnLoad: true,
-      securityLevel: 'loose',
-      /*
-      flowchart: {
-      	rankSpacing: 50,
-      }
-      */
-    });
 
     const startItem = flowData.find(i => i.id === startItemId);
     startItem.depth = 0;
