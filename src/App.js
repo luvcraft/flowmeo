@@ -221,6 +221,47 @@ class Item extends React.Component {
     refresh = true;
   }
 
+  confirmDelete = () => {
+  	const item = currentItem;
+  	if(item.id === startItemId) {
+  		return;
+  	}
+
+    confirmAlert({
+      title: "Confirm Deleting Item",
+      message: "Are you sure you want to delete "+item.id+"?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => this.deleteItem(item)
+        },
+        {
+          label: "No"
+        }
+      ]
+    });
+  }
+
+  deleteItem(item) {
+  	LogAction(item.id + " deleted!");
+  	if(currentItem.id === item.id) {
+    	currentItem = flowData[0];  		
+  	}
+
+  	flowData.forEach((i) => {
+  		var index = i.parents?.indexOf(item.id) ?? -1;
+  		if(index > -1) {
+  			i.parents.splice(index,1);
+	  		if(i.parents.length < 1) {
+	  			i.parents.push(startItemId);
+	  		}
+  		}
+  	});
+
+  	flowData.splice(flowData.indexOf(item),1);
+  	refresh = true;
+  }
+
   parentSection(i) { 
     if(i.id === startItemId) {
       return null;
@@ -273,6 +314,18 @@ class Item extends React.Component {
     );
   };
 
+  deleteButton(item) {
+		if(item.id != startItemId) {
+  		return (
+				<button className="deleteItemButton" onClick={this.confirmDelete}>
+          Delete
+        </button>
+			);
+  	} else {
+  		return null;
+  	}
+  }
+
   render() {
     const i = this.props.data;
     const notes = i.notes ?? null;
@@ -287,6 +340,7 @@ class Item extends React.Component {
           onSave={this.handleTextChange}
         />
         </b><br/>
+        {this.deleteButton(i)}        
         <i>
          <EditText
           name="id"

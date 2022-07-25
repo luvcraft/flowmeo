@@ -49,3 +49,8 @@ html, body, #root {
   border-top-style: solid;
   border-top-width: 1px;
 }
+
+.deleteItemButton {
+  position: absolute;
+  right: 4px;
+}
