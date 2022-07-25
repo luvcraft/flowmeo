@@ -37,6 +37,15 @@ path.react-flow__edge-path {
   font-size: 16px;
 }
 
+.react-flow__node-multiHandle {  
+    border: 1px solid #1a192b;
+    border-radius: 3px;
+    color: #222;
+    padding: 10px;
+    text-align: center;
+    width: 150px;
+}
+
 .rightSide {
   flex: 40;
 }

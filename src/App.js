@@ -10,6 +10,7 @@ import ReactFlow, {
   MiniMap,
   Controls,
 } from 'react-flow-renderer';
+import MultiHandleNode from './MultiHandleNode.jsx';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import './App.css';
 import './EditText.css';
@@ -22,6 +23,8 @@ var refresh = false;
 var flowData = [{ "id":"start", "description":"Start", "depth":0 }];
 var consoleItem = [];
 
+const nodeTypes = { multiHandle: MultiHandleNode };
+
 function Flowchart() {
   const handleNodeClick = (event, node) => {
 		SelectItemById(node.id);
@@ -30,7 +33,7 @@ function Flowchart() {
   var x = 0;
   var y = 0;
   var xstep = 200;
-  var ystep = 100;
+  var ystep = 125;
   var maxX = xstep * 4;
   var lastDepth = -1;
   var edges = [];
@@ -57,13 +60,18 @@ function Flowchart() {
 	  	x += xstep;
   	}
 
-  	data.parents?.forEach((p) => {
+  	data.parents?.forEach((p,i) => {
   		let edgeColor = edgeColors[edgeColorIndex];
+  		let ph = flowData.find((item) => item.id === p).children.indexOf(data.id);
+  		let th = i < 8 ? i : 0
+  		ph = ph < 8 ? ph : 0
 
   		edges.push({
   			id: 'edge-'+p+'-'+data.id,
   			source: p,
   			target: data.id,
+  			sourceHandle: 's'+ph,
+  			targetHandle: 't'+th,
   			markerEnd: {
   				type: 'arrowclosed',
   				color: edgeColor,
@@ -91,6 +99,7 @@ function Flowchart() {
   		y=0;
   		node.type = 'input';
   	} else {
+  		node.type = 'multiHandle'
   	}
 
   	if(data.id === currentItem.id) {
@@ -104,12 +113,16 @@ function Flowchart() {
   	return node;
   });
 
+  // console.log("edges="+ JSON.stringify(edges,null,'\t'));
+
   return (
 		<ReactFlow 
 			nodes={nodes}
 			edges={edges}
 			onNodeClick={handleNodeClick}
 			nodesDraggable={false}
+			nodesConnectable={false}
+			nodeTypes={nodeTypes}
 		/>
   );
 }
