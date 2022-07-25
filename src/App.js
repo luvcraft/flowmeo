@@ -37,6 +37,8 @@ function Flowchart() {
   var maxX = xstep * 4;
   var lastDepth = -1;
   var edges = [];
+  var centerX = 0;
+  var centerY = 0;
 
   const edgeColors = [
   	'black',
@@ -53,7 +55,6 @@ function Flowchart() {
   const nodes = flowData.map((data) => {
   	if(data.depth > lastDepth || x >= maxX) {
   		x = 0;
-  		edgeColorIndex = 0;
   		y += ystep;
   		lastDepth = data.depth;
   	} else {
@@ -104,6 +105,8 @@ function Flowchart() {
 
   	if(data.id === currentItem.id) {
   		node.style.background = '#ff0';
+  		centerX = Math.max(x,0);
+  		centerY = Math.max(y,0);
   	} else {
 
   	}
@@ -123,6 +126,7 @@ function Flowchart() {
 			nodesDraggable={false}
 			nodesConnectable={false}
 			nodeTypes={nodeTypes}
+//			defaultPosition={[(xstep/2)-centerX, (ystep/2)-centerY]}
 		/>
   );
 }

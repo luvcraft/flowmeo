@@ -46,6 +46,10 @@ path.react-flow__edge-path {
     width: 150px;
 }
 
+.react-flow__handle {
+  height: 0;
+}
+
 .rightSide {
   flex: 40;
 }
