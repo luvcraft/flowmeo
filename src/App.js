@@ -518,16 +518,13 @@ class App extends React.Component {
   mmdForDownload() {
     return (
       'graph TD\n'
-        +flowData.map((data) => {    
-          var s = data.id
-          if(data.id === startItemId){
-            s += '{'+data.description+'}'
-          } else {
-            s += '('+data.description+')'
-          }
+        +flowData.map((data, index) => {    
+          var s = index + '(node '+index+')'
 
           if(data.children && data.children.length > 0) {
-            s +=' --> '+data.children.join(' & ');
+          	data.children.forEach((child) => {
+          		s+= '\n'+index+ ' --> ' + flowData.findIndex((c) => c.id === child);
+          	});
           }
 
           return (s);
