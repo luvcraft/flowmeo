@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import Select, { components } from "react-select";
 import CreatableSelect from 'react-select/creatable';
 import { EditText, EditTextarea } from 'react-edit-text';
@@ -9,9 +9,15 @@ import ReactFlow, {
   addEdge,
   MiniMap,
   Controls,
+  Background,
+  MarkerType,
 } from 'react-flow-renderer';
 import MultiHandleNode from './MultiHandleNode.jsx';
 import dagre from 'dagre';
+import FloatingEdge from './FloatingEdge.jsx';
+import FloatingConnectionLine from './FloatingConnectionLine.jsx';
+import { createNodesAndEdges } from './utils.jsx';
+
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import './App.css';
 import './EditText.css';
@@ -25,6 +31,9 @@ var flowData = [{ "id":"start", "description":"Start", "depth":0 }];
 var consoleItem = [];
 
 const nodeTypes = { multiHandle: MultiHandleNode };
+const edgeTypes = {
+  floating: FloatingEdge,
+};
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -111,6 +120,7 @@ function Flowchart() {
   			target: data.id,
   			sourceHandle: 's'+ph,
   			targetHandle: 't'+th,
+  			type: 'floating',
   			markerEnd: {
   				type: 'arrowclosed',
   				color: edgeColor,
@@ -167,6 +177,8 @@ function Flowchart() {
 			nodesDraggable={false}
 			nodesConnectable={false}
 			nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
+      connectionLineComponent={FloatingConnectionLine}
 //			defaultPosition={[(xstep/2)-centerX, (ystep/2)-centerY]}
 		/>
   );
