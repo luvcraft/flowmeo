@@ -515,23 +515,22 @@ class App extends React.Component {
     return downloadData;
   }
 
-  mmdForDownload() {
+  // graphviz dot file for download
+  dotForDownload() {
     return (
-      'graph TD\n'
+      'digraph {\nrankdir=TD\n'
         +flowData.map((data) => {    
-          var s = data.id
-          if(data.id === startItemId){
-            s += '{'+data.description+'}'
-          } else {
-            s += '('+data.description+')'
-          }
+          var s = data.id + '[label="'+data.description+'"]'
 
           if(data.children && data.children.length > 0) {
-            s +=' --> '+data.children.join(' & ');
+          	data.children.forEach((child) => {
+          		s += '\n'+data.id + ' -> ' + child
+          	});
           }
 
           return (s);
         }).join('\n')
+        +'\n}'
     );
   }
 
@@ -604,12 +603,12 @@ class App extends React.Component {
             <a
               type="button"
               href={`data:text/json;charset=utf-8,${encodeURIComponent(
-               this.mmdForDownload()
+               this.dotForDownload()
               )}`}
-              download="flowmeo.mmd"
+              download="flowmeo.dot"
             >
               <button>
-                Download MMD
+                Download DOT
               </button>
             </a>
             <button onClick={() => document.getElementById('file-upload').click()}>
