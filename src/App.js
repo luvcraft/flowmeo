@@ -11,6 +11,7 @@ import ReactFlow, {
   Controls,
 } from 'react-flow-renderer';
 import MultiHandleNode from './MultiHandleNode.jsx';
+import dagre from 'dagre';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import './App.css';
 import './EditText.css';
@@ -24,6 +25,43 @@ var flowData = [{ "id":"start", "description":"Start", "depth":0 }];
 var consoleItem = [];
 
 const nodeTypes = { multiHandle: MultiHandleNode };
+
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+const getLayoutedElements = (nodes, edges) => {
+	const nodeWidth = 200;
+	const nodeHeight = 50;
+
+  dagreGraph.setGraph({ rankdir: 'TB' });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  nodes.forEach((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    node.targetPosition = 'top';
+    node.sourcePosition = 'bottom';
+
+    // We are shifting the dagre node position (anchor=center center) to the top left
+    // so it matches the React Flow node anchor point (top left).
+    node.position = {
+      x: nodeWithPosition.x - nodeWidth / 2,
+      y: nodeWithPosition.y - nodeHeight / 2,
+    };
+
+    return node;
+  });
+
+  return { nodes, edges };
+};
 
 function Flowchart() {
   const handleNodeClick = (event, node) => {
@@ -100,7 +138,7 @@ function Flowchart() {
   		y=0;
   		node.type = 'input';
   	} else {
-  		node.type = 'multiHandle'
+//  		node.type = 'multiHandle'
   	}
 
   	if(data.id === currentItem.id) {
@@ -111,10 +149,13 @@ function Flowchart() {
 
   	}
 
-		node.position = { x: x, y: y };
+  	// dagre handles positioning
+//		node.position = { x: x, y: y };
 
   	return node;
   });
+
+  getLayoutedElements(nodes, edges);
 
   // console.log("edges="+ JSON.stringify(edges,null,'\t'));
 
