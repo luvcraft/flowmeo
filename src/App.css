@@ -20,12 +20,17 @@ html, body, #root {
   text-align: left;
 }
 
-.mermaid {
+.flowchart {
   border: 1px solid darkgray;
   padding: 4px;  
   flex: 60;
   overflow-y: auto;
   display: inline-block;
+}
+
+.node text {
+  font-family: "trebuchet ms",verdana,arial,sans-serif;
+  color: #333;
 }
 
 .rightSide {

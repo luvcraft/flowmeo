@@ -4,7 +4,7 @@ import CreatableSelect from 'react-select/creatable';
 import { EditText, EditTextarea } from 'react-edit-text';
 import { confirmAlert } from "react-confirm-alert";
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import mermaid from "mermaid"
+import { Graphviz } from 'graphviz-react';
 import './App.css';
 import './EditText.css';
 
@@ -16,23 +16,85 @@ var refresh = false;
 var flowData = [{ "id":"start", "description":"Start", "depth":0 }];
 var consoleItem = [];
 
-class Mermaid extends React.Component {
-  componentDidMount() {
-    mermaid.contentLoaded();
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.chart !== this.props.chart) {
-      document
-        .getElementById("mermaid")
-        .removeAttribute("data-processed");
-      mermaid.contentLoaded();
+function Flowchart() {
+  window.flowchartClick = async function(e) {
+    if (e && e != '') {
+      SelectItemById(e);
     }
   }
 
-  render() {
-    return <div id="mermaid" className="mermaid">{this.props.chart}</div>;
-  }
+	var useRank = true;
+	var useEdgeColors = true;
+
+  const edgeColors = [
+  											'black',
+  											'#880000',
+  											'#008800',
+  											'#000088',
+  											'#666600',
+  											'#660066',
+  											'#006666'
+  										]
+
+  var edgeColorIndex = 0;
+	var rank = [,];
+
+  let dot = 'digraph {\nrankdir=TD\nnode [shape=rect style="rounded,filled" fillcolor="#ECECFF" color="#9370DB" margin=0.2]\n'
+			  +flowData.map((data) => {    
+			    var s = data.id + '[id="'+data.id+'"][label="'+data.description+'"]'
+			    if(data.id === startItemId) {
+			    	s += '[shape=diamond style="filled" width=1 height=1 margin=0]'
+			    }
+			    if(data.id === currentItem.id) {
+            s += '[fillcolor="yellow"]'
+          }
+
+          if(rank[data.depth]) {
+          	rank[data.depth].push(data.id);
+          } else {
+          	rank[data.depth] = [data.id];
+          }
+
+			    if(data.children && data.children.length > 0) {
+			    	data.children.forEach((child) => {
+			    		s += '\n'+data.id + ' -> ' + child+'[penwidth=2.0]';
+			    		if(useEdgeColors) {
+								s+= '[color="'+edgeColors[edgeColorIndex]+'"]';
+				    		edgeColorIndex++; edgeColorIndex%=edgeColors.length;
+			    		}
+			    	});
+			    }
+			    // click functionality.
+			    // here's what mermaid used:
+			    // s += '\n\tclick '+data.id+' flowchartClick'
+
+			    return (s);
+			  }).join(';\n');
+			  if(useRank) {
+				  dot += "\n" + rank.map((data) =>
+				  {
+				  	return (
+				  		'{rank=same; ' + data.join("; ") + '};'
+				  	)
+				  }).join("\n");
+				}
+			  dot += '\n}';
+
+//	console.log(dot);
+
+  return (
+		<Graphviz 
+			className={'flowchart'}
+   		dot={dot} 
+   		options={
+   			{
+   				zoom: true,
+   				width: null,
+   				height: null,
+   			}
+   		}
+ 		/>
+  );
 }
 
 function AncestorsOf(id) {
@@ -82,39 +144,6 @@ const MultiValueLabel = props => {
     />
   );
 };
-
-function Flowchart() {
-  window.flowchartClick = async function(e) {
-    if (e && e != '') {
-      SelectItemById(e);
-    }
-  }
-
-  const chart = 'graph TD\n'
-        +'classDef highlight fill:#ff0\n'
-        +flowData.map((data) => {    
-          var s = data.id
-          if(data.id === startItemId){
-            s += '{'+data.description+'}'
-          } else {
-            s += '('+data.description+')'
-          }
-          if(data.id === currentItem.id) {
-            s += ':::highlight'
-          }
-
-          if(data.children && data.children.length > 0) {
-            s +=' --> '+data.children.join(' & ');
-          }
-          s += '\n\tclick '+data.id+' flowchartClick'
-
-          return (s);
-        }).join('\n');
-
-  return (
-   <Mermaid chart={chart} />
-  );
-}
 
 function CreateIfNew(i, addStartParent = true) {
   if(!flowData.find((item) => item.id === i)) {
@@ -439,15 +468,6 @@ class App extends React.Component {
       prevItem: currentItem, 
       prevConsoleLength: 0
     };
-    mermaid.initialize({
-      startOnLoad: true,
-      securityLevel: 'loose',
-      /*
-      flowchart: {
-      	rankSpacing: 50,
-      }
-      */
-    });
 
     const startItem = flowData.find(i => i.id === startItemId);
     startItem.depth = 0;
