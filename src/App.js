@@ -1,11 +1,12 @@
 import React from 'react';
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 import Select, { components } from "react-select";
 import CreatableSelect from 'react-select/creatable';
 import { EditText, EditTextarea } from 'react-edit-text';
 import { confirmAlert } from "react-confirm-alert";
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { Graphviz } from 'graphviz-react';
+import { zoom as d3_zoom, select as d3_select } from 'd3';
 import './App.css';
 import './EditText.css';
 
@@ -31,7 +32,12 @@ function Flowchart() {
   			if(item === currentItem) {
   				const textElement = e.querySelector('text');
   				if(textElement) {
-  					recenter(flowchartElement,graphElement,textElement.getAttribute('x'),textElement.getAttribute('y'));
+  					recenter(
+  						flowchartElement,
+  						graphElement,
+  						parseInt(textElement.getAttribute('x')),
+  						parseInt(textElement.getAttribute('y'))
+						);
   				}
   			}
   		}
@@ -39,10 +45,20 @@ function Flowchart() {
   });
 
   const recenter = (f,g,x,y) => {
-  	// IDK why we need this 80 offset to both, but it works --rhg
-  	const cx = -x + (f.clientWidth/2) - 80;
-  	const cy = -y + (f.clientHeight/2) - 80;
-  	g.setAttribute('transform','translate('+cx+','+cy+') scale(1)');
+  	let svg = d3_select('svg');
+  	let zoom = d3_zoom();
+
+  	let w = svg.node().getBBox().width;
+  	let h = svg.node().getBBox().height;
+
+  	let gx = -x + (f.clientWidth/2) - 80;
+  	let gy = -y + (f.clientHeight/2) - 80;
+
+  	let cx = (w/2) -gx;
+  	let cy = (h/2) -gy;
+
+  	zoom.translateTo(svg,cx,cy);
+  	g.setAttribute('transform','translate('+gx+','+gy+') scale(1)');
   };
 
 	var useRank = true;
