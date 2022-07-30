@@ -1,4 +1,5 @@
 import React from 'react';
+import {useEffect} from 'react';
 import Select, { components } from "react-select";
 import CreatableSelect from 'react-select/creatable';
 import { EditText, EditTextarea } from 'react-edit-text';
@@ -17,11 +18,32 @@ var flowData = [{ "id":"start", "description":"Start", "depth":0 }];
 var consoleItem = [];
 
 function Flowchart() {
-  window.flowchartClick = async function(e) {
-    if (e && e != '') {
-      SelectItemById(e);
-    }
-  }
+  useEffect(() => {
+  	const flowchartElement = document.querySelector('div.flowchart');
+  	const graphElement = flowchartElement.querySelector('g.graph');
+
+  	flowData.forEach((item) => {
+  		const e = graphElement.querySelector('#'+item.id);
+  		if(e) {
+  			e.onclick = function() { 
+  				SelectItemById(item.id); 
+  			};
+  			if(item === currentItem) {
+  				const textElement = e.querySelector('text');
+  				if(textElement) {
+  					recenter(flowchartElement,graphElement,textElement.getAttribute('x'),textElement.getAttribute('y'));
+  				}
+  			}
+  		}
+  	});
+  });
+
+  const recenter = (f,g,x,y) => {
+  	// IDK why we need this 80 offset to both, but it works --rhg
+  	const cx = -x + (f.clientWidth/2) - 80;
+  	const cy = -y + (f.clientHeight/2) - 80;
+  	g.setAttribute('transform','translate('+cx+','+cy+') scale(1)');
+  };
 
 	var useRank = true;
 	var useEdgeColors = true;
@@ -48,6 +70,8 @@ function Flowchart() {
 			    if(data.id === currentItem.id) {
             s += '[fillcolor="yellow"]'
           }
+
+//          s += '[href="#?nodeId='+data.id+'"]'
 
           if(rank[data.depth]) {
           	rank[data.depth].push(data.id);

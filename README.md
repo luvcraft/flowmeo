@@ -11,6 +11,6 @@ Here's an overview video:
 
 [![Flowmeo Overview Video](https://img.youtube.com/vi/52JzFivuCLo/0.jpg)](https://www.youtube.com/watch?v=52JzFivuCLo)
 
-I built it using React (https://reactjs.org/) and Mermaid.js (https://mermaid-js.github.io/mermaid/)
+I built it using React (https://reactjs.org/) with Graphviz-React (https://www.npmjs.com/package/graphviz-react)
 
 You can download the data from it as either JSON or mmd (mermaid markup), and upload data as JSON. It's designed to be used as a planning tool rather than to generate scripts that you can use directly for game logic, although there's no reason you couldn't use the data for game logic with a suitable system.
