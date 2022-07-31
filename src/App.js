@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect } from 'react';
-import Select, { components } from "react-select";
+import { components } from "react-select";
 import CreatableSelect from 'react-select/creatable';
 import { EditText, EditTextarea } from 'react-edit-text';
 import { confirmAlert } from "react-confirm-alert";
@@ -30,7 +30,7 @@ function generateDot(highlightCurrent, useRank = true, useEdgeColors = true) {
 											]
 
 	var edgeColorIndex = 0;
-	var rank = [,];
+	var rank = [];
 
 	let dot = 'digraph {\nrankdir=TD\nnode [shape=rect style="rounded,filled" fillcolor="#ECECFF" color="#9370DB" margin=0.2]\n'
 				+flowData.map((data) => {    
@@ -118,7 +118,8 @@ function Flowchart() {
 		let cx = (w/2) -gx;
 		let cy = (h/2) -gy;
 
-		zoom.translateTo(svg,cx,cy);
+		svg.call(zoom.translateTo, cx, cy);
+		svg.call(zoom.scaleTo, 1);
 		g.setAttribute('transform','translate('+gx+','+gy+') scale(1)');
 	};
 
@@ -391,7 +392,7 @@ class Item extends React.Component {
 	};
 
 	deleteButton(item) {
-		if(item.id != startItemId) {
+		if(item.id !== startItemId) {
 			return (
 				<button className="deleteItemButton" onClick={this.confirmDelete}>
 					Delete
@@ -538,11 +539,11 @@ class App extends React.Component {
 	}
 
 	refreshCheck() {
-		if(this.state.prevItem != currentItem) {
+		if(this.state.prevItem !== currentItem) {
 			this.setState({ prevItem: currentItem });
 		}
 
-		if(this.state.prevConsoleLength != consoleItem.length) {
+		if(this.state.prevConsoleLength !== consoleItem.length) {
 			this.setState({prevConsoleLength: consoleItem.length });
 		}
 
@@ -591,7 +592,7 @@ class App extends React.Component {
 				this.clearData();
 				loadedData.forEach((d) => {
 					if(flowData.find((item) => item.id === d.id)) {
-						if(d.id != startItemId) {
+						if(d.id !== startItemId) {
 							LogAction("data already contains an item with id '" + d.id + "'. skipping!");
 						}
 					}
