@@ -54,6 +54,11 @@ function Flowchart() {
   	let gx = -x + (f.clientWidth/2) - 80;
   	let gy = -y + (f.clientHeight/2) - 80;
 
+  	// clamp gy to the height of the graph
+  	if(gy > h) {
+  		gy = h;
+  	}
+
   	let cx = (w/2) -gx;
   	let cy = (h/2) -gy;
 
@@ -87,8 +92,6 @@ function Flowchart() {
             s += '[fillcolor="yellow"]'
           }
 
-//          s += '[href="#?nodeId='+data.id+'"]'
-
           if(rank[data.depth]) {
           	rank[data.depth].push(data.id);
           } else {
@@ -104,10 +107,6 @@ function Flowchart() {
 			    		}
 			    	});
 			    }
-			    // click functionality.
-			    // here's what mermaid used:
-			    // s += '\n\tclick '+data.id+' flowchartClick'
-
 			    return (s);
 			  }).join(';\n');
 			  if(useRank) {
