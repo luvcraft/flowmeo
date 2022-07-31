@@ -28,9 +28,13 @@ html, body, #root {
   display: inline-block;
 }
 
-.node text {
+g.node text {
   font-family: "trebuchet ms",verdana,arial,sans-serif;
   color: #333;
+}
+
+g.node:hover {
+  cursor: pointer;
 }
 
 .rightSide {
