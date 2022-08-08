@@ -102,7 +102,6 @@ function Flowchart() {
 
 	const recenter = (f,g,x,y) => {
 		let svg = d3_select('svg');
-		let zoom = d3_zoom();
 
 		let w = svg.node().getBBox().width;
 		let h = svg.node().getBBox().height;
@@ -123,9 +122,10 @@ function Flowchart() {
 		g.setAttribute('transform','translate('+gx+','+gy+') scale(1)');
 	};
 
-	var useRank = true;
+	var useRank = false;
 	var useEdgeColors = true;
 
+	const zoom = d3_zoom();
 	const dot = generateDot(true, useRank, useEdgeColors);
 
 //	console.log(dot);
