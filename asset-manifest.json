@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/flowmeo/static/css/main.2e29eabd.css",
-    "main.js": "/flowmeo/static/js/main.30945f8b.js",
-    "static/js/787.0338a475.chunk.js": "/flowmeo/static/js/787.0338a475.chunk.js",
-    "index.html": "/flowmeo/index.html",
-    "main.2e29eabd.css.map": "/flowmeo/static/css/main.2e29eabd.css.map",
-    "main.30945f8b.js.map": "/flowmeo/static/js/main.30945f8b.js.map",
-    "787.0338a475.chunk.js.map": "/flowmeo/static/js/787.0338a475.chunk.js.map"
+    "main.css": "/flowmeo/mermaid/static/css/main.2e29eabd.css",
+    "main.js": "/flowmeo/mermaid/static/js/main.d141dbc9.js",
+    "static/js/787.0338a475.chunk.js": "/flowmeo/mermaid/static/js/787.0338a475.chunk.js",
+    "index.html": "/flowmeo/mermaid/index.html",
+    "main.2e29eabd.css.map": "/flowmeo/mermaid/static/css/main.2e29eabd.css.map",
+    "main.d141dbc9.js.map": "/flowmeo/mermaid/static/js/main.d141dbc9.js.map",
+    "787.0338a475.chunk.js.map": "/flowmeo/mermaid/static/js/787.0338a475.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.2e29eabd.css",
-    "static/js/main.30945f8b.js"
+    "static/js/main.d141dbc9.js"
   ]
 }
