@@ -577,9 +577,13 @@ class App extends React.Component {
 
 			delete ditem['depth'];
 			delete ditem['children'];
+			if(ditem['notes'] === '') {
+				delete ditem['notes'];
+			}
 
 			downloadData.push(ditem);
 		});
+		downloadData.sort((a,b) => a.id.localeCompare(b.id));
 		return downloadData;
 	}
 
