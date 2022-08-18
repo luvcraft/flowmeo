@@ -6,7 +6,7 @@ import { EditText, EditTextarea } from 'react-edit-text';
 import { confirmAlert } from "react-confirm-alert";
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { Graphviz } from 'graphviz-react';
-import { zoom as d3_zoom, select as d3_select } from 'd3';
+import { zoom as d3_zoom, select as d3_select, zoomIdentity } from 'd3';
 import './App.css';
 import './EditText.css';
 
@@ -78,6 +78,7 @@ function Flowchart() {
 	useEffect(() => {
 		const flowchartElement = document.querySelector('div.flowchart');
 		const graphElement = flowchartElement.querySelector('g.graph');
+		var textElement;
 
 		flowData.forEach((item) => {
 			const e = graphElement.querySelector('#'+item.id);
@@ -86,25 +87,25 @@ function Flowchart() {
 					SelectItemById(item.id); 
 				};
 				if(item === currentItem) {
-					const textElement = e.querySelector('text');
-					if(textElement) {
-						recenter(
-							flowchartElement,
-							graphElement,
-							parseInt(textElement.getAttribute('x')),
-							parseInt(textElement.getAttribute('y'))
-						);
-					}
+					textElement = e.querySelector('text');
 				}
 			}
 		});
+
+		if(textElement) {
+			recenter(
+				flowchartElement,
+				parseInt(textElement.getAttribute('x')),
+				parseInt(textElement.getAttribute('y'))
+			);
+		}		
 	});
 
-	const recenter = (f,g,x,y) => {
+	const recenter = (f,x,y) => {
 		let svg = d3_select('svg');
 
-		let w = svg.node().getBBox().width;
-		let h = svg.node().getBBox().height;
+		let w = parseInt(svg.attr("width"));
+		let h = parseInt(svg.attr("height"));
 
 		let gx = -x + (f.clientWidth/2) - 80;
 		let gy = -y + (f.clientHeight/2) - 80;
@@ -117,9 +118,16 @@ function Flowchart() {
 		let cx = (w/2) -gx;
 		let cy = (h/2) -gy;
 
-		svg.call(zoom.translateTo, cx, cy);
-		svg.call(zoom.scaleTo, 1);
-		g.setAttribute('transform','translate('+gx+','+gy+') scale(1)');
+		let g = d3_select('g');
+		g.transition()
+		  .duration(500)
+		  .attr("transform", "translate(" + gx+ "," + gy + ")scale(1)")
+			.on("end", function(event) { 
+				svg.call(zoom.transform, zoomIdentity
+													.translate(gx,gy)
+													.scale(1)
+				);
+			});
 	};
 
 	var useRank = false;
