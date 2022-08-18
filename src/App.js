@@ -92,6 +92,9 @@ function Flowchart() {
 			}
 		});
 
+		// TODO: figure out why textElement is undefined 
+		// the first time this happens after a reload --rhg
+
 		if(textElement) {
 			recenter(
 				flowchartElement,
@@ -114,9 +117,6 @@ function Flowchart() {
 		if(gy > h) {
 			gy = h;
 		}
-
-		let cx = (w/2) -gx;
-		let cy = (h/2) -gy;
 
 		let g = d3_select('g');
 		g.transition()
@@ -177,11 +177,12 @@ function AncestorsOf(id) {
 }
 
 function SelectItemById(id) {
-	if(currentItem.id === id) {
+	if(currentItem && currentItem.id === id) {
 		LogAction('⚠️ currentItem is already set to: ' + currentItem.id);
 		return;
 	}
 	currentItem = flowData.find((item) => item.id === id);
+	localStorage.setItem('currentItemId', currentItem?.id);
 }
 
 const MultiValueLabel = props => {
@@ -330,7 +331,7 @@ class Item extends React.Component {
 	deleteItem(item) {
 		LogAction(item.id + " deleted!");
 		if(currentItem.id === item.id) {
-			currentItem = flowData[0];  		
+			SelectItemById(startItemId);
 		}
 
 		flowData.forEach((i) => {
@@ -503,15 +504,17 @@ class AllItems extends React.Component {
 
 function LoadDataLocal() {
 	let loadedData = JSON.parse(localStorage.getItem('flowData'));
+	let currentItemId = localStorage.getItem('currentItemId');
 	if(loadedData != null) {
 		flowData = loadedData;
 	}
-	currentItem = flowData[0];
+	SelectItemById(currentItemId ?? startItemId);
 }
 
 function SaveDataLocal() {
 	let data = flowData.slice();
 	localStorage.setItem('flowData', JSON.stringify(data));
+	localStorage.setItem('currentItemId', currentItem.id);
 }
 
 class App extends React.Component {
@@ -618,7 +621,7 @@ class App extends React.Component {
 					}
 				});
 			}
-			currentItem = flowData[0];
+			SelectItemById(startItemId);
 			refresh = true;
 		};
 	};
