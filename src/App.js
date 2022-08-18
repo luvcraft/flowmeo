@@ -526,6 +526,11 @@ class App extends React.Component {
 	refreshData() {
 		optionArray = [];
 		flowData.forEach((data) => {
+			if(data.id !== startItemId) {
+				data.depth = null
+			}
+		});
+		flowData.forEach((data) => {
 			optionArray.push({value:data.id,label:data.description + ' (' + data.id + ')'});
 			this.setChildrenAndDepth(data);
 		});
