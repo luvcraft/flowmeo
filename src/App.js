@@ -18,7 +18,7 @@ var refresh = false;
 var flowData = [{ "id":"start", "description":"Start", "depth":0 }];
 var consoleItem = [];
 
-function generateDot(highlightCurrent, useRank = true, useEdgeColors = true) {
+function generateDot(highlightCurrent, useRank = false, useEdgeColors = true) {
 	const edgeColors = [
 												'black',
 												'#880000',
