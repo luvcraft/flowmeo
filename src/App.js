@@ -594,7 +594,7 @@ class App extends React.Component {
 
 	setDepth(nodeId, depth) {
 		var node = flowData.find(i => i.id === nodeId);
-		if(node == null) {
+		if(node == null || node.children == null) {
 			return;
 		}
 		if(node.id === startItemId || node.depth < depth) {
