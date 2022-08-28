@@ -32,7 +32,7 @@ function generateDot(highlightCurrent, useRank = false, useEdgeColors = true) {
 	var edgeColorIndex = 0;
 	var rank = [];
 
-	let dot = 'digraph {\nrankdir=TD\nnode [shape=rect style="rounded,filled" fillcolor="#ECECFF" color="#9370DB" margin=0.2]\n'
+	let dot = 'digraph {\nrankdir="TB"\nnode [shape=rect style="rounded,filled" fillcolor="#ECECFF" color="#9370DB" margin=0.2]\n'
 				+flowData.map((data) => {    
 					var s = data.id + '[id="'+data.id+'"][label="'+data.description+'"]'
 					if(data.id === startItemId) {
@@ -61,9 +61,29 @@ function generateDot(highlightCurrent, useRank = false, useEdgeColors = true) {
 				}).join(';\n');
 
 				if(useRank) {
-					dot += "\n" + rank.map((data) =>
+
+					/*
+					// early attempt at getting ranking to work better by creating
+					// an invisible ranked list of nodes, and then rank=same-ing 
+					// them with nodes of their same rank.
+					// 
+					// this ended up uncovering a problem with the depth ranking system,
+					// and after I fixed that this became superfluous.
+					// 
+					// but keeping this code for future reference --rhg
+
+					const rankPrefix = "__r";
+					var rankList = rankPrefix + "0";
+					for(var i=1;i<rank.length;i++) {
+						rankList += " -> " + rankPrefix + i;
+					}
+					dot += '\n{ node [style=invis]; edge [style=invis]; '+rankList+';}';
+					*/
+
+					dot += "\n" + rank.map((data, index) =>
 					{
 						return (
+//							'{rank=same; ' + rankPrefix + index + ';' + data.join("; ") + '};'
 							'{rank=same; ' + data.join("; ") + '};'
 						)
 					}).join("\n");
@@ -130,13 +150,13 @@ function Flowchart() {
 			});
 	};
 
-	var useRank = false;
+	var useRank = true;
 	var useEdgeColors = true;
 
 	const zoom = d3_zoom();
 	const dot = generateDot(true, useRank, useEdgeColors);
 
-//	console.log(dot);
+//	 console.log(dot);
 
 	return (
 		<Graphviz 
@@ -572,18 +592,27 @@ class App extends React.Component {
 		}
 	}
 
+	setDepth(nodeId, depth) {
+		var node = flowData.find(i => i.id === nodeId);
+		if(node == null) {
+			return;
+		}
+		if(node.id === startItemId || node.depth < depth) {
+			node.depth = depth;
+			node.children.forEach((i) => {
+				this.setDepth(i,depth+1);
+			});
+		}
+	}
+
 	setChildrenAndDepth(i) {
 		i.children = [];
 		flowData.forEach((data) => {
 			if(data.parents && data.parents.includes(i.id)) {
 				i.children.push(data.id);
-				if(i.depth != null) {
-					if(data.depth == null || data.depth <= i.depth) {
-						data.depth = i.depth+1;
-					}
-				}
 			}
 		});
+		this.setDepth(startItemId, 0);
 	}
 
 	dataForDownload() {
