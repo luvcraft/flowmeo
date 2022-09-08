@@ -100,6 +100,12 @@ function Flowchart() {
 		const graphElement = flowchartElement.querySelector('g.graph');
 		var textElement;
 
+		let svg = d3_select('svg');
+
+		svg.attr('width','100%');
+		svg.attr('height','100%');
+		svg.attr('viewBox',null);
+
 		flowData.forEach((item) => {
 			const e = graphElement.querySelector('#'+item.id);
 			if(e) {
@@ -126,16 +132,14 @@ function Flowchart() {
 
 	const recenter = (f,x,y) => {
 		let svg = d3_select('svg');
-
-		let w = parseInt(svg.attr("width"));
-		let h = parseInt(svg.attr("height"));
+		let bbox = svg.node().getBBox();
 
 		let gx = -x + (f.clientWidth/2) - 80;
 		let gy = -y + (f.clientHeight/2) - 80;
 
 		// clamp gy to the height of the graph
-		if(gy > h) {
-			gy = h;
+		if(gy > bbox.height) {
+			gy = bbox.height;
 		}
 
 		let g = d3_select('g');
