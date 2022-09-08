@@ -134,8 +134,8 @@ function Flowchart() {
 		let svg = d3_select('svg');
 		let bbox = svg.node().getBBox();
 
-		let gx = -x + (f.clientWidth/2) - 80;
-		let gy = -y + (f.clientHeight/2) - 80;
+		let gx = -x + (f.clientWidth/2);
+		let gy = -y + (f.clientHeight/2);
 
 		// clamp gy to the height of the graph
 		if(gy > bbox.height) {
