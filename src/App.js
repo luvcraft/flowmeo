@@ -40,6 +40,8 @@ function generateDot(highlightCurrent, useRank = false, useEdgeColors = true) {
 					}
 					if(data.id === currentItem.id && highlightCurrent) {
 						s += '[fillcolor="yellow"]'
+					} else if(data.children.length < 1) {
+						s += '[fillcolor="pink"]'						
 					}
 
 					if(rank[data.depth]) {
