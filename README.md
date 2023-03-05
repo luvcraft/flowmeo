@@ -15,4 +15,4 @@ I built it using React (https://reactjs.org/) with Graphviz-React (https://www.n
 
 There is also a branch that uses mermaid.js (https://mermaid-js.github.io/), which is more performant, but has rendering issues when graphs start getting big. You're welcome to clone this repo and run that version from the `mermaid` branch.
 
-You can download the data from it as either JSON or mmd (mermaid markup), and upload data as JSON. It's designed to be used as a planning tool rather than to generate scripts that you can use directly for game logic, although there's no reason you couldn't use the data for game logic with a suitable system.
+You can download the data from it as either JSON or DOT (Graphviz markup), and upload data as JSON. It's designed to be used as a planning tool rather than to generate scripts that you can use directly for game logic, although there's no reason you couldn't use the data for game logic with a suitable system.
