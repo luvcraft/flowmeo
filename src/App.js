@@ -69,6 +69,11 @@ const MultiValueLabel = props => {
 
 function CreateIfNew(i, addStartParent = true) {
 	if (!flowData.find((item) => item.id === i)) {
+		if (i === "end") {
+			LogAction("🚫 Can't make a node named 'end'! Try 'endNode' or 'END' instead.");
+			return;
+		}
+
 		LogAction(i + " doesn't exist! creating!");
 		flowData.push({ id: i, description: i, parents: addStartParent ? ['start'] : [] })
 		refresh = true;
