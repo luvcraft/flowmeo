@@ -1,5 +1,5 @@
 import React from 'react';
-import Select, { components } from "react-select";
+import { components } from "react-select";
 import CreatableSelect from 'react-select/creatable';
 import { EditText, EditTextarea } from 'react-edit-text';
 import { confirmAlert } from "react-confirm-alert";
@@ -10,12 +10,13 @@ import './App.css';
 import './EditText.css';
 
 export const startItemId = 'start';
-export var flowData = [{ "id": "start", "description": "Start", "depth": 0 }];
+
 export var currentItem;
+export var flowData = [{ "id": "start", "description": "Start", "depth": 0 }];
 
 var optionArray = [];
-var consoleItem = [];
 var refresh = false;
+var consoleItem = [];
 
 function AncestorsOf(id) {
 	const item = flowData.find((i) => i.id === id);
@@ -41,11 +42,12 @@ function AncestorsOf(id) {
 }
 
 export function SelectItemById(id) {
-	if (currentItem.id === id) {
+	if (currentItem && currentItem.id === id) {
 		LogAction('⚠️ currentItem is already set to: ' + currentItem.id);
 		return;
 	}
 	currentItem = flowData.find((item) => item.id === id);
+	localStorage.setItem('currentItemId', currentItem?.id);
 }
 
 const MultiValueLabel = props => {
@@ -194,7 +196,7 @@ class Item extends React.Component {
 	deleteItem(item) {
 		LogAction(item.id + " deleted!");
 		if (currentItem.id === item.id) {
-			currentItem = flowData[0];
+			SelectItemById(startItemId);
 		}
 
 		flowData.forEach((i) => {
@@ -264,7 +266,7 @@ class Item extends React.Component {
 	};
 
 	deleteButton(item) {
-		if (item.id != startItemId) {
+		if (item.id !== startItemId) {
 			return (
 				<button className="deleteItemButton" onClick={this.confirmDelete}>
 					Delete
@@ -297,7 +299,7 @@ class Item extends React.Component {
 						onSave={this.handleTextChange}
 					/>
 				</i>
-		(<i>Depth: {i.depth}</i>)<br />
+				(<i>Depth: {i.depth}</i>)<br />
 				<EditTextarea
 					name="notes"
 					placeholder='Notes...'
@@ -347,10 +349,11 @@ function ConsoleOutput() {
 	);
 }
 
+/*
 class AllItems extends React.Component {
 	render() {
 		const items = flowData.map((data, key) => {
-			return (
+			return(
 				<li key={key}>
 					<Item
 						data={data}
@@ -364,18 +367,21 @@ class AllItems extends React.Component {
 		);
 	}
 }
+*/
 
 function LoadDataLocal() {
 	let loadedData = JSON.parse(localStorage.getItem('flowData'));
+	let currentItemId = localStorage.getItem('currentItemId');
 	if (loadedData != null) {
 		flowData = loadedData;
 	}
-	currentItem = flowData[0];
+	SelectItemById(currentItemId ?? startItemId);
 }
 
 function SaveDataLocal() {
 	let data = flowData.slice();
 	localStorage.setItem('flowData', JSON.stringify(data));
+	localStorage.setItem('currentItemId', currentItem.id);
 }
 
 class App extends React.Component {
@@ -407,6 +413,11 @@ class App extends React.Component {
 	refreshData() {
 		optionArray = [];
 		flowData.forEach((data) => {
+			if (data.id !== startItemId) {
+				data.depth = null
+			}
+		});
+		flowData.forEach((data) => {
 			optionArray.push({ value: data.id, label: data.description + ' (' + data.id + ')' });
 			this.setChildrenAndDepth(data);
 		});
@@ -420,11 +431,11 @@ class App extends React.Component {
 	}
 
 	refreshCheck() {
-		if (this.state.prevItem != currentItem) {
+		if (this.state.prevItem !== currentItem) {
 			this.setState({ prevItem: currentItem });
 		}
 
-		if (this.state.prevConsoleLength != consoleItem.length) {
+		if (this.state.prevConsoleLength !== consoleItem.length) {
 			this.setState({ prevConsoleLength: consoleItem.length });
 		}
 
@@ -437,18 +448,27 @@ class App extends React.Component {
 		}
 	}
 
+	setDepth(nodeId, depth) {
+		var node = flowData.find(i => i.id === nodeId);
+		if (node == null || node.children == null) {
+			return;
+		}
+		if (node.id === startItemId || node.depth < depth) {
+			node.depth = depth;
+			node.children.forEach((i) => {
+				this.setDepth(i, depth + 1);
+			});
+		}
+	}
+
 	setChildrenAndDepth(i) {
 		i.children = [];
 		flowData.forEach((data) => {
 			if (data.parents && data.parents.includes(i.id)) {
 				i.children.push(data.id);
-				if (i.depth != null) {
-					if (data.depth == null || data.depth <= i.depth) {
-						data.depth = i.depth + 1;
-					}
-				}
 			}
 		});
+		this.setDepth(startItemId, 0);
 	}
 
 	dataForDownload() {
@@ -458,9 +478,13 @@ class App extends React.Component {
 
 			delete ditem['depth'];
 			delete ditem['children'];
+			if (ditem['notes'] === '') {
+				delete ditem['notes'];
+			}
 
 			downloadData.push(ditem);
 		});
+		downloadData.sort((a, b) => a.id.localeCompare(b.id));
 		return downloadData;
 	}
 
@@ -493,7 +517,7 @@ class App extends React.Component {
 				this.clearData();
 				loadedData.forEach((d) => {
 					if (flowData.find((item) => item.id === d.id)) {
-						if (d.id != startItemId) {
+						if (d.id !== startItemId) {
 							LogAction("data already contains an item with id '" + d.id + "'. skipping!");
 						}
 					}
@@ -502,7 +526,7 @@ class App extends React.Component {
 					}
 				});
 			}
-			currentItem = flowData[0];
+			SelectItemById(startItemId);
 			refresh = true;
 		};
 	};
@@ -548,7 +572,7 @@ class App extends React.Component {
 						>
 							<button>
 								Download Json
-			  </button>
+							</button>
 						</a>
 						<a
 							type="button"
@@ -559,15 +583,15 @@ class App extends React.Component {
 						>
 							<button>
 								Download MMD
-			  </button>
+							</button>
 						</a>
 						<button onClick={() => document.getElementById('file-upload').click()}>
 							Upload Json
-			</button>
+						</button>
 						<input id="file-upload" type="file" accept=".json" onChange={this.handleUpload} style={{ display: 'none' }} />
 						<button className="clearDataButton" onClick={this.confirmClear}>
 							Clear Data
-			</button>
+						</button>
 					</div>
 					<ConsoleOutput />
 				</div>
