@@ -1,2 +1,2 @@
 To run locally: npm start
-To build and deploy: rpm run deploy
+To build and deploy: npm run deploy
