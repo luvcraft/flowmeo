@@ -19,18 +19,18 @@ var consoleItem = [];
 
 function AncestorsOf(id) {
 	const item = flowData.find((i) => i.id === id);
-	if(!item || !item.parents || item.parents.length < 1) {
+	if (!item || !item.parents || item.parents.length < 1) {
 		return [];
 	} else {
 		var ancestors = [];
 		item.parents.forEach((p) => {
-			if(!ancestors.includes(p)) {
-					ancestors.push(p);
+			if (!ancestors.includes(p)) {
+				ancestors.push(p);
 			}
 			var parentAncestors = AncestorsOf(p);
-			if(parentAncestors.length > 0) {
+			if (parentAncestors.length > 0) {
 				parentAncestors.forEach((pa) => {
-					if(!ancestors.includes(pa)){
+					if (!ancestors.includes(pa)) {
 						ancestors.push(pa);
 					}
 				});
@@ -41,7 +41,7 @@ function AncestorsOf(id) {
 }
 
 export function SelectItemById(id) {
-	if(currentItem && currentItem.id === id) {
+	if (currentItem && currentItem.id === id) {
 		LogAction('⚠️ currentItem is already set to: ' + currentItem.id);
 		return;
 	}
@@ -67,14 +67,14 @@ const MultiValueLabel = props => {
 };
 
 function CreateIfNew(i, addStartParent = true) {
-	if(!flowData.find((item) => item.id === i)) {
+	if (!flowData.find((item) => item.id === i)) {
 		LogAction(i + " doesn't exist! creating!");
-		flowData.push({id:i, description:i, parents:addStartParent ? ['start'] : []})
+		flowData.push({ id: i, description: i, parents: addStartParent ? ['start'] : [] })
 		refresh = true;
 	}
 }
 
-function LogAction(action){
+function LogAction(action) {
 	console.log(action);
 	consoleItem.push(action);
 }
@@ -87,99 +87,99 @@ class Item extends React.Component {
 			// strip whitespace and non alphanumeric characters out of string
 			data.value = data.value.replace(/[^A-Z0-9]/ig, "_");
 
-			if(data.value === currentItem.id) {
-				LogAction("🚫 Can't make "+data.value+" a parent of itself!");
+			if (data.value === currentItem.id) {
+				LogAction("🚫 Can't make " + data.value + " a parent of itself!");
 				invalid = true;
 			}
 			CreateIfNew(data.value);
-			if(AncestorsOf(data.value).includes(currentItem.id)) {
-				LogAction("🚫 Can't make "+data.value+" a parent of "+currentItem.id+"! "+currentItem.id+" is an ancestor of "+data.value+"!");
+			if (AncestorsOf(data.value).includes(currentItem.id)) {
+				LogAction("🚫 Can't make " + data.value + " a parent of " + currentItem.id + "! " + currentItem.id + " is an ancestor of " + data.value + "!");
 				invalid = true;
 			}
 		});
-		
-		if(!invalid) {
-			currentItem.parents = event.map((data) => {return data.value});   
+
+		if (!invalid) {
+			currentItem.parents = event.map((data) => { return data.value });
 			refresh = true;
 		}
 	};
 
 	handleChildChange(event) {
 		// if a child has been removed, remove this parent from all children
-		if(event.length < currentItem.children.length) {
+		if (event.length < currentItem.children.length) {
 			currentItem.children.forEach((c) => {
 				var childItem = flowData.find((i) => i.id === c);
-				if(childItem) {
+				if (childItem) {
 					let index = childItem.parents.indexOf(currentItem.id);
-					if(index > -1) {
-						childItem.parents.splice(index,1);
+					if (index > -1) {
+						childItem.parents.splice(index, 1);
 					}
 				}
 			});
 		}
 
 		let invalid = false;
-		event.forEach((data) => { 
+		event.forEach((data) => {
 			// strip whitespace and non alphanumeric characters out of string
 			data.value = data.value.replace(/[^A-Z0-9]/ig, "_");
 
-			if(data.value === currentItem.id) {
-				LogAction("🚫 Can't make "+data.value+" a parent of itself!");
-				invalid=true;
+			if (data.value === currentItem.id) {
+				LogAction("🚫 Can't make " + data.value + " a parent of itself!");
+				invalid = true;
 			}
 			CreateIfNew(data.value, false);
-			if(AncestorsOf(currentItem.id).includes(data.value)) {
-				LogAction("🚫 Can't make "+currentItem.id+" a parent of "+data.value+"! "+data.value+" is an ancestor of "+currentItem.id+"!");
-				invalid=true;
+			if (AncestorsOf(currentItem.id).includes(data.value)) {
+				LogAction("🚫 Can't make " + currentItem.id + " a parent of " + data.value + "! " + data.value + " is an ancestor of " + currentItem.id + "!");
+				invalid = true;
 			}
 		});
 
-		if(!invalid) {
+		if (!invalid) {
 			event.forEach((data) => {
 				var childItem = flowData.find((i) => i.id === data.value);
-				if(childItem && !childItem.parents.includes(currentItem.id)) {
+				if (childItem && !childItem.parents.includes(currentItem.id)) {
 					childItem.parents.push(currentItem.id);
 				}
 			});
 			refresh = true;
 		}
-	};                        
+	};
 
-	handleTextChange({name, value, previousValue}) {
-		if(name === 'description') {
+	handleTextChange({ name, value, previousValue }) {
+		if (name === 'description') {
 			currentItem.description = value;
-		} else if(name === 'notes') {
+		} else if (name === 'notes') {
 			currentItem.notes = value;
-		} else if(name === 'id') {
-			if(previousValue === startItemId) {
+		} else if (name === 'id') {
+			if (previousValue === startItemId) {
 				LogAction("⚠️ Can't rename start item!");
 				return;
-			} else if(flowData.find((item) => item.id === value)) {
-				LogAction("⚠️ An item named "+value+" already exists!");
+			} else if (flowData.find((item) => item.id === value)) {
+				LogAction("⚠️ An item named " + value + " already exists!");
 				return;
 			} else {
 				currentItem.id = value;
 				flowData.forEach((item) => {
 					let index = item.parents?.indexOf(previousValue) ?? -1;
-					if(index > -1){
+					if (index > -1) {
 						item.parents[index] = value;
 					}
 				});
 				LogAction("renamed item id " + previousValue + " to " + value);
-			}      
+			}
 		}
 		refresh = true;
 	}
 
 	confirmDelete = () => {
 		const item = currentItem;
-		if(item.id === startItemId) {
+		if (item.id === startItemId) {
 			return;
 		}
 
 		confirmAlert({
 			title: "Confirm Deleting Item",
-			message: "Are you sure you want to delete "+item.id+"?",
+			message: "Are you sure you want to delete " + item.id + "?",
 			buttons: [
 				{
 					label: "Yes",
@@ -194,47 +194,47 @@ class Item extends React.Component {
 
 	deleteItem(item) {
 		LogAction(item.id + " deleted!");
-		if(currentItem.id === item.id) {
+		if (currentItem.id === item.id) {
 			SelectItemById(startItemId);
 		}
 
 		flowData.forEach((i) => {
 			var index = i.parents?.indexOf(item.id) ?? -1;
-			if(index > -1) {
-				i.parents.splice(index,1);
-				if(i.parents.length < 1) {
+			if (index > -1) {
+				i.parents.splice(index, 1);
+				if (i.parents.length < 1) {
 					i.parents.push(startItemId);
 				}
 			}
 		});
 
-		flowData.splice(flowData.indexOf(item),1);
+		flowData.splice(flowData.indexOf(item), 1);
 		refresh = true;
 	}
 
-	parentSection(i) { 
-		if(i.id === startItemId) {
+	parentSection(i) {
+		if (i.id === startItemId) {
 			return null;
 		}
 
-		const parentOptions = i.parents ? 
-													i.parents.sort().map((data) => {return {value:data,label:data}}) : [];
+		const parentOptions = i.parents ?
+			i.parents.sort().map((data) => { return { value: data, label: data } }) : [];
 
 		return (
 			<table border="0"><tbody><tr>
 				<td>
-				<span role="img" aria-label="parents">⬆️</span>
+					<span role="img" aria-label="parents">⬆️</span>
 				</td>
 				<td width="100%">
-				<CreatableSelect
-					isMulti
-					name="parents"
-					value={parentOptions}
-					onChange={this.handleParentChange}
-					options={optionArray}
-					placeholder="Add parent..."
-					components={{ MultiValueLabel }}
-				/>
+					<CreatableSelect
+						isMulti
+						name="parents"
+						value={parentOptions}
+						onChange={this.handleParentChange}
+						options={optionArray}
+						placeholder="Add parent..."
+						components={{ MultiValueLabel }}
+					/>
 				</td>
 			</tr></tbody></table>
 		);
@@ -242,30 +242,30 @@ class Item extends React.Component {
 
 	childSection(i) {
 		const childOptions = i.children ?
-													i.children.sort().map((data) => {return {value:data,label:data}}) : [];
+			i.children.sort().map((data) => { return { value: data, label: data } }) : [];
 
 		return (
 			<table border="0"><tbody><tr>
 				<td>
-				<span role="img" aria-label="children">⬇️</span>
+					<span role="img" aria-label="children">⬇️</span>
 				</td>
 				<td width="100%">
-				<CreatableSelect
-					isMulti
-					name="children"
-					value={childOptions}
-					onChange={this.handleChildChange}
-					options={optionArray}
-					placeholder="Add child..."
-					components={{ MultiValueLabel }}
-				/>
+					<CreatableSelect
+						isMulti
+						name="children"
+						value={childOptions}
+						onChange={this.handleChildChange}
+						options={optionArray}
+						placeholder="Add child..."
+						components={{ MultiValueLabel }}
+					/>
 				</td>
 			</tr></tbody></table>
 		);
 	};
 
 	deleteButton(item) {
-		if(item.id !== startItemId) {
+		if (item.id !== startItemId) {
 			return (
 				<button className="deleteItemButton" onClick={this.confirmDelete}>
 					Delete
@@ -284,21 +284,21 @@ class Item extends React.Component {
 			<div className="item">
 				{this.parentSection(i)}
 				<b>
-				<EditText
-					name="description"
-					defaultValue={i.description}
-					onSave={this.handleTextChange}
-				/>
-				</b><br/>
-				{this.deleteButton(i)}        
+					<EditText
+						name="description"
+						defaultValue={i.description}
+						onSave={this.handleTextChange}
+					/>
+				</b><br />
+				{this.deleteButton(i)}
 				<i>
-				 <EditText
-					name="id"
-					defaultValue={i.id}
-					onSave={this.handleTextChange}
-				/>
+					<EditText
+						name="id"
+						defaultValue={i.id}
+						onSave={this.handleTextChange}
+					/>
 				</i>
-				(<i>Depth: {i.depth}</i>)<br/>
+				(<i>Depth: {i.depth}</i>)<br />
 				<EditTextarea
 					name="notes"
 					placeholder='Notes...'
@@ -334,12 +334,12 @@ function Toc() {
 function ConsoleOutput() {
 	return (
 		<div className="console">
-			<b>Console:</b><br/>
+			<b>Console:</b><br />
 			{
 				consoleItem.map((c, key) => {
 					return (
 						<div key={key} className='consoleItem'>
-						{c}
+							{c}
 						</div>
 					)
 				})
@@ -348,6 +348,7 @@ function ConsoleOutput() {
 	);
 }
 
+/*
 class AllItems extends React.Component {
 	render() {
 		const items = flowData.map((data, key) => {
@@ -365,11 +366,12 @@ class AllItems extends React.Component {
 		);
 	}
 }
+*/
 
 function LoadDataLocal() {
 	let loadedData = JSON.parse(localStorage.getItem('flowData'));
 	let currentItemId = localStorage.getItem('currentItemId');
-	if(loadedData != null) {
+	if (loadedData != null) {
 		flowData = loadedData;
 	}
 	SelectItemById(currentItemId ?? startItemId);
@@ -382,13 +384,13 @@ function SaveDataLocal() {
 }
 
 class App extends React.Component {
-	constructor(props){
+	constructor(props) {
 		super(props);
 
 		LoadDataLocal();
 
-		this.state = { 
-			prevItem: currentItem, 
+		this.state = {
+			prevItem: currentItem,
 			prevConsoleLength: 0
 		};
 
@@ -401,17 +403,17 @@ class App extends React.Component {
 	refreshData() {
 		optionArray = [];
 		flowData.forEach((data) => {
-			if(data.id !== startItemId) {
+			if (data.id !== startItemId) {
 				data.depth = null
 			}
 		});
 		flowData.forEach((data) => {
-			optionArray.push({value:data.id,label:data.description + ' (' + data.id + ')'});
+			optionArray.push({ value: data.id, label: data.description + ' (' + data.id + ')' });
 			this.setChildrenAndDepth(data);
 		});
 
-		flowData.sort((a,b) => a.id.localeCompare(b.id)).sort((a,b) => a.depth - b.depth);
-		optionArray.sort((a,b) => a.label.localeCompare(b.label));
+		flowData.sort((a, b) => a.id.localeCompare(b.id)).sort((a, b) => a.depth - b.depth);
+		optionArray.sort((a, b) => a.label.localeCompare(b.label));
 	}
 
 	componentDidMount() {
@@ -419,15 +421,15 @@ class App extends React.Component {
 	}
 
 	refreshCheck() {
-		if(this.state.prevItem !== currentItem) {
+		if (this.state.prevItem !== currentItem) {
 			this.setState({ prevItem: currentItem });
 		}
 
-		if(this.state.prevConsoleLength !== consoleItem.length) {
-			this.setState({prevConsoleLength: consoleItem.length });
+		if (this.state.prevConsoleLength !== consoleItem.length) {
+			this.setState({ prevConsoleLength: consoleItem.length });
 		}
 
-		if(refresh) {
+		if (refresh) {
 			refresh = false;
 			this.refreshData();
 			this.setState(this.state);
@@ -438,13 +440,13 @@ class App extends React.Component {
 
 	setDepth(nodeId, depth) {
 		var node = flowData.find(i => i.id === nodeId);
-		if(node == null || node.children == null) {
+		if (node == null || node.children == null) {
 			return;
 		}
-		if(node.id === startItemId || node.depth < depth) {
+		if (node.id === startItemId || node.depth < depth) {
 			node.depth = depth;
 			node.children.forEach((i) => {
-				this.setDepth(i,depth+1);
+				this.setDepth(i, depth + 1);
 			});
 		}
 	}
@@ -452,7 +454,7 @@ class App extends React.Component {
 	setChildrenAndDepth(i) {
 		i.children = [];
 		flowData.forEach((data) => {
-			if(data.parents && data.parents.includes(i.id)) {
+			if (data.parents && data.parents.includes(i.id)) {
 				i.children.push(data.id);
 			}
 		});
@@ -462,17 +464,17 @@ class App extends React.Component {
 	dataForDownload() {
 		var downloadData = [];
 		flowData.forEach((item) => {
-			let ditem = {...item};
+			let ditem = { ...item };
 
 			delete ditem['depth'];
 			delete ditem['children'];
-			if(ditem['notes'] === '') {
+			if (ditem['notes'] === '') {
 				delete ditem['notes'];
 			}
 
 			downloadData.push(ditem);
 		});
-		downloadData.sort((a,b) => a.id.localeCompare(b.id));
+		downloadData.sort((a, b) => a.id.localeCompare(b.id));
 		return downloadData;
 	}
 
@@ -481,11 +483,11 @@ class App extends React.Component {
 		fileReader.readAsText(e.target.files[0], "UTF-8");
 		fileReader.onload = e => {
 			let loadedData = JSON.parse(e.target.result);
-			if(loadedData != null) {
+			if (loadedData != null) {
 				this.clearData();
 				loadedData.forEach((d) => {
-					if(flowData.find((item) => item.id === d.id)) {
-						if(d.id !== startItemId) {
+					if (flowData.find((item) => item.id === d.id)) {
+						if (d.id !== startItemId) {
 							LogAction("data already contains an item with id '" + d.id + "'. skipping!");
 						}
 					}
@@ -516,7 +518,7 @@ class App extends React.Component {
 	};
 
 	clearData() {
-		flowData =  [{ "id":"start", "description":"Start", "depth":0 }];
+		flowData = [{ "id": "start", "description": "Start", "depth": 0 }];
 		currentItem = flowData[0];
 		refresh = true;
 	}
@@ -534,7 +536,7 @@ class App extends React.Component {
 						<a
 							type="button"
 							href={`data:text/json;charset=utf-8,${encodeURIComponent(
-							 JSON.stringify(this.dataForDownload(),null,'\t')
+								JSON.stringify(this.dataForDownload(), null, '\t')
 							)}`}
 							download="flowmeo.json"
 						>
@@ -545,7 +547,7 @@ class App extends React.Component {
 						<a
 							type="button"
 							href={`data:text/json;charset=utf-8,${encodeURIComponent(
-							 generateDot(false)
+								generateDot(false)
 							)}`}
 							download="flowmeo.dot"
 						>
@@ -556,14 +558,14 @@ class App extends React.Component {
 						<button onClick={() => document.getElementById('file-upload').click()}>
 							Upload Json
 						</button>
-						<input id="file-upload" type="file" accept=".json" onChange={this.handleUpload} style={{display:'none'}} />
+						<input id="file-upload" type="file" accept=".json" onChange={this.handleUpload} style={{ display: 'none' }} />
 						<button className="clearDataButton" onClick={this.confirmClear}>
 							Clear Data
 						</button>
 					</div>
 					<ConsoleOutput />
 				</div>
-			</div>  
+			</div>
 		);
 	}
 }
