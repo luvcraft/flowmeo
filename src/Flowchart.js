@@ -82,6 +82,8 @@ export function Flowchart() {
 					width: null,
 					height: null,
 					useWorker: false,
+					tweenShapes: false,
+					tweenPaths: false
 				}
 			}
 		/>
