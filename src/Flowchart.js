@@ -29,7 +29,8 @@ export function Flowchart() {
 		});
 
 		// TODO: figure out why textElement is undefined 
-		// the first time this happens after a reload --rhg
+		// the first time this happens after a reload,
+		// but only when running locally --rhg
 
 		if (textElement) {
 			recenter(
@@ -93,6 +94,27 @@ export function Flowchart() {
 	);
 }
 
+// split the provided string into \n separated strings of maxLength or less charactersx
+function WrapByLength(str, maxLength = 25) {
+	const list = str.split(' ');
+
+	let curline = '';
+	let outlines = [];
+
+	list.forEach((word) => {
+		if ((curline.length + word.length + 1) > maxLength) {
+			outlines.push(curline);
+			curline = '';
+		} else {
+			curline += ' ';
+		}
+		curline += word;
+	});
+	outlines.push(curline);
+
+	return outlines.join('\n');
+}
+
 export function generateDot(highlightCurrent, useRank = false, useEdgeColors = true) {
 	const edgeColors = [
 		'black',
@@ -109,7 +131,7 @@ export function generateDot(highlightCurrent, useRank = false, useEdgeColors = t
 
 	let dot = 'digraph {\nrankdir="TB"\nnode [shape=rect style="rounded,filled" fillcolor="#ECECFF" color="#9370DB" margin=0.2]\n'
 		+ flowData.map((data) => {
-			var s = data.id + '[id="' + data.id + '"][label="' + data.description + '"]'
+			var s = data.id + '[id="' + data.id + '"][label="' + WrapByLength(data.description) + '"]'
 			if (data.id === startItemId) {
 				s += '[shape=diamond style="filled" width=1 height=1 margin=0]'
 			}
