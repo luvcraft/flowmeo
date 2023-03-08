@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect } from 'react';
 import { Graphviz } from 'graphviz-react';
-import { zoom as d3_zoom, select as d3_select, zoomIdentity } from 'd3';
+import { zoom as d3_zoom, select as d3_select, zoomTransform, zoomIdentity } from 'd3';
 import { startItemId, currentItem, flowData, SelectItemById } from './App'
 
 export function Flowchart() {
@@ -47,12 +47,15 @@ export function Flowchart() {
 		let gx = -x + (f.clientWidth / 2);
 		let gy = -y + (f.clientHeight / 2);
 
+		const top = bbox.height / zoomTransform(svg.node()).k;
+
 		// clamp gy to the height of the graph
-		if (gy > bbox.height) {
-			gy = bbox.height;
+		if (gy > top) {
+			gy = top;
 		}
 
 		let g = d3_select('g');
+
 		g.transition()
 			.duration(500)
 			.attr("transform", "translate(" + gx + "," + gy + ")scale(1)")
