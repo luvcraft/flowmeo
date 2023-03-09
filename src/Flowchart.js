@@ -129,7 +129,7 @@ export function generateDot(highlightCurrent, useRank = false, useEdgeColors = t
 	var edgeColorIndex = 0;
 	var rank = [];
 
-	let dot = 'digraph {\nrankdir="TB"\nnode [shape=rect style="rounded,filled" fillcolor="#ECECFF" color="#9370DB" margin=0.2]\n'
+	let dot = 'digraph {\nrankdir="TB"\nranksep=0.75\nnode [shape=rect style="rounded,filled" fillcolor="#ECECFF" color="#9370DB" margin=0.2]\n'
 		+ flowData.map((data) => {
 			var s = data.id + '[id="' + data.id + '"][label="' + WrapByLength(data.description) + '"]'
 			if (data.id === startItemId) {
