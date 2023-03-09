@@ -1,7 +1,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # Flowmeo
-Flowmeo is a web tool to quickly make one-way, "dependency" flowcharts, like you might need for designing an adventure game, or a tech tree, or a skill tree. I made it primarily as an aid for designing video games, but it could be useful for a planning a variety of different kinds of projects.
+Flowmeo is a web tool to quickly make one-way, "dependency" flowcharts (aka "[directed acyclic graphs](https://en.wikipedia.org/wiki/Directed_acyclic_graph)"), like you might need for designing an adventure game, or a tech tree, or a skill tree. I made it primarily as an aid for designing video games, but it could be useful for a planning a variety of different kinds of projects or systems.
 
 You can try it out here: https://luvcraft.github.io/flowmeo/
 
