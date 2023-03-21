@@ -94,21 +94,23 @@ export function Flowchart() {
 	);
 }
 
-// split the provided string into \n separated strings of maxLength or less charactersx
+// split the provided string into \n separated strings of maxLength or less characters
 function WrapByLength(str, maxLength = 25) {
 	const list = str.split(' ');
 
 	let curline = '';
 	let outlines = [];
+	let firstWord = true;
 
 	list.forEach((word) => {
 		if ((curline.length + word.length + 1) > maxLength) {
 			outlines.push(curline);
 			curline = '';
-		} else {
+		} else if (!firstWord) {
 			curline += ' ';
 		}
 		curline += word;
+		firstWord = false;
 	});
 	outlines.push(curline);
 
@@ -129,7 +131,9 @@ export function generateDot(highlightCurrent, useRank = false, useEdgeColors = t
 	var edgeColorIndex = 0;
 	var rank = [];
 
-	let dot = 'digraph {\nrankdir="TB"\nranksep=0.75\nnode [shape=rect style="rounded,filled" fillcolor="#ECECFF" color="#9370DB" margin=0.2]\n'
+	let dot = 'digraph {\nrankdir="TB"\nranksep=0.75\n'
+		+ 'node [shape=rect style="rounded,filled" fillcolor="#ECECFF" color="#9370DB" margin=0.2]\n'
+		+ 'edge [penwidth=2.0]\n'
 		+ flowData.map((data) => {
 			var s = data.id + '[id="' + data.id + '"][label="' + WrapByLength(data.description) + '"]'
 			if (data.id === startItemId) {
@@ -149,7 +153,7 @@ export function generateDot(highlightCurrent, useRank = false, useEdgeColors = t
 
 			if (data.children && data.children.length > 0) {
 				data.children.forEach((child) => {
-					s += '\n' + data.id + ' -> ' + child + '[penwidth=2.0]';
+					s += '\n' + data.id + ' -> ' + child;
 					if (useEdgeColors) {
 						s += '[color="' + edgeColors[edgeColorIndex] + '"]';
 						edgeColorIndex++; edgeColorIndex %= edgeColors.length;
