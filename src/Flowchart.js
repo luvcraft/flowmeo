@@ -68,11 +68,13 @@ export function Flowchart() {
 			});
 	};
 
+	var highlightCurrent = true;
+	var wrapLabels = true;
 	var useRank = true;
 	var useEdgeColors = true;
 
 	const zoom = d3_zoom();
-	const dot = generateDot(true, useRank, useEdgeColors);
+	const dot = generateDot(highlightCurrent, wrapLabels, useRank, useEdgeColors);
 
 	//	 console.log(dot);
 
@@ -117,7 +119,12 @@ function WrapByLength(str, maxLength = 25) {
 	return outlines.join('\n');
 }
 
-export function generateDot(highlightCurrent, useRank = false, useEdgeColors = true) {
+// generate a dot document, which graphviz uses to make graphs
+// highlightCurrent (bool) = highlight the currently-selected node
+// wrapLabels (bool) = wrap long label text to multiple lines
+// useRank (bool) = keep nodes of the same rank on the same row
+// useEdgeColors (bool) = tint edges to make them easier to follow
+export function generateDot(highlightCurrent, wrapLabels, useRank = false, useEdgeColors = false) {
 	const edgeColors = [
 		'black',
 		'#880000',
@@ -135,7 +142,14 @@ export function generateDot(highlightCurrent, useRank = false, useEdgeColors = t
 		+ 'node [shape=rect style="rounded,filled" fillcolor="#ECECFF" color="#9370DB" margin=0.2]\n'
 		+ 'edge [penwidth=2.0]\n'
 		+ flowData.map((data) => {
-			var s = data.id + '[id="' + data.id + '"][label="' + WrapByLength(data.description) + '"]'
+			var s = data.id + '[id="' + data.id + '"]'
+
+			if (wrapLabels) {
+				s += '[label="' + WrapByLength(data.description) + '"]'
+			} else {
+				s += '[label="' + data.description + '"]'
+			}
+
 			if (data.id === startItemId) {
 				s += '[shape=diamond style="filled" width=1 height=1 margin=0]'
 			}

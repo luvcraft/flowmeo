@@ -547,7 +547,7 @@ class App extends React.Component {
 						<a
 							type="button"
 							href={`data:text/json;charset=utf-8,${encodeURIComponent(
-								generateDot(false)
+								generateDot(false, false)
 							)}`}
 							download="flowmeo.dot"
 						>
