@@ -146,6 +146,9 @@ class Item extends React.Component {
 	};
 
 	handleTextChange({ name, value, previousValue }) {
+		// strip non alphanumeric characters from value
+		value = value.replace('\'', '');
+
 		if (name === 'description') {
 			currentItem.description = value;
 		} else if (name === 'notes') {
