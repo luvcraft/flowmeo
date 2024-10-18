@@ -17,7 +17,9 @@ var optionArray = [];
 var refresh = false;
 var consoleItem = [];
 
-function AncestorsOf(id) {
+// get the ancestor nodes of the node with the specified ID
+// returns a list of ancestor nodes
+export function AncestorsOf(id) {
 	const item = flowData.find((i) => i.id === id);
 	if (!item || !item.parents || item.parents.length < 1) {
 		return [];
@@ -40,6 +42,7 @@ function AncestorsOf(id) {
 	}
 }
 
+// select a node by its ID
 export function SelectItemById(id) {
 	if (currentItem && currentItem.id === id) {
 		LogAction('⚠️ currentItem is already set to: ' + currentItem.id);
