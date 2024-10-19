@@ -414,6 +414,9 @@ class App extends React.Component {
 			}
 		});
 		flowData.forEach((data) => {
+			if (data.parents) {
+				data.parents.sort();
+			}
 			optionArray.push({ value: data.id, label: data.description + ' (' + data.id + ')' });
 			this.setChildrenAndDepth(data);
 		});
