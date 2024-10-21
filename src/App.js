@@ -103,6 +103,7 @@ class Item extends React.Component {
 
 		if (!invalid) {
 			currentItem.parents = event.map((data) => { return data.value });
+			currentItem.parents.sort();
 			refresh = true;
 		}
 	};
@@ -224,7 +225,7 @@ class Item extends React.Component {
 		}
 
 		const parentOptions = i.parents ?
-			i.parents.sort().map((data) => { return { value: data, label: data } }) : [];
+			i.parents.map((data) => { return { value: data, label: data } }) : [];
 
 		return (
 			<table border="0"><tbody><tr>
@@ -414,9 +415,6 @@ class App extends React.Component {
 			}
 		});
 		flowData.forEach((data) => {
-			if (data.parents) {
-				data.parents.sort();
-			}
 			optionArray.push({ value: data.id, label: data.description + ' (' + data.id + ')' });
 			this.setChildrenAndDepth(data);
 		});

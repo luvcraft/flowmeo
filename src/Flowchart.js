@@ -137,7 +137,10 @@ export function generateDot(highlightCurrent, wrapLabels, useRank = false, useEd
 
 	var edgeColorIndex = 0;
 	var rank = [];
-	var ancestors = AncestorsOf(currentItem.id);
+
+	// WAY too slow. commenting out for now.
+	// TODO: make this more performant--rhg
+	//	var ancestors = AncestorsOf(currentItem.id);
 
 	let dot = 'digraph {\nrankdir="TB"\nranksep=0.75\n'
 		+ 'node [shape=rect style="rounded,filled" fillcolor="#ECECFF" color="#9370DB" margin=0.2]\n'
@@ -158,8 +161,10 @@ export function generateDot(highlightCurrent, wrapLabels, useRank = false, useEd
 				s += '[fillcolor="yellow"]'
 			} else if (data.children.length < 1) {
 				s += '[fillcolor="pink"]'
+			/*
 			} else if (ancestors.includes(data.id)) {
 				s += '[fillcolor="#CCFFCC"]'
+			*/
 			}
 
 			if (rank[data.depth]) {
