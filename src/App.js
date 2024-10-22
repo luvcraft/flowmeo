@@ -146,13 +146,12 @@ class Item extends React.Component {
     };
 
     handleTextChange({ name, value, previousValue }) {
-        value = SanitizeName(value);
-
         if (name === 'description') {
             currentItem.description = value;
         } else if (name === 'notes') {
             currentItem.notes = value;
         } else if (name === 'id') {
+            value = SanitizeName(value);
             if (previousValue === startItemId) {
                 LogAction("⚠️ Can't rename start item!");
                 return;
