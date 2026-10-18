@@ -1,6 +1,6 @@
 {
   "name": "flowmeo",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "homepage": "https://luvcraft.github.io/flowmeo",
   "private": true,
   "dependencies": {
@@ -24,12 +24,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [

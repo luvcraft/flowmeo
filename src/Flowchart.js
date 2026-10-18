@@ -139,7 +139,7 @@ export function generateDot(highlightCurrent, wrapLabels, useRank = false, useEd
 	var rank = [];
 
 	// WAY too slow. commenting out for now.
-	// TODO: make this more performant--rhg
+	// TODO: make this more performant --rhg
 	//	var ancestors = AncestorsOf(currentItem.id);
 
 	let dot = 'digraph {\nrankdir="TB"\nranksep=0.75\n'
